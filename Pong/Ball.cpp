@@ -29,7 +29,7 @@ void Ball::Draw()
 	{
 		lastTime = currentTime;
 
-		if (positionX > (SCREEN_WIDTH - TAB_DISTANCE - tabWidth - 5) &&
+		if (positionX > (SCREEN_WIDTH - TAB_DISTANCE - tabWidth - size) &&
 			positionY > playerTwoPosition &&
 			positionY < (playerTwoPosition + tabHeight) &&
 			positionX < (SCREEN_WIDTH - TAB_DISTANCE))
