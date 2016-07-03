@@ -9,7 +9,10 @@ Ball::Ball(SDL_Renderer *passedRenderer, int passedSize, int passedSpeed) :
 	positionX((SCREEN_WIDTH / 2) - (passedSize / 2)),
 	positionY((SCREEN_HEIGHT / 2) - (passedSize / 2)),
 	directionHorizontal(RIGHT),
-	directionVertical(DOWN)
+	directionVertical(DOWN),
+	lastTime(SDL_GetTicks()),
+	xSpeedComponent(passedSpeed / 2),
+	ySpeedComponent(passedSpeed / 2)
 {
 }
 
@@ -21,7 +24,22 @@ Ball::~Ball()
 
 void Ball::Draw()
 {
-	static unsigned int lastTime = SDL_GetTicks(), currentTime;
+	handleCollision();
+	Sprite::Draw(positionX, positionY, size, size);
+}
+
+
+void Ball::ResetPosition()
+{
+	positionX = (SCREEN_WIDTH / 2) - (size / 2);
+	positionY = (SCREEN_HEIGHT / 2) - (size / 2);
+	xSpeedComponent = speed / 2;
+	ySpeedComponent = speed / 2;
+}
+
+void Ball::handleCollision()
+{
+	unsigned int currentTime;
 
 	currentTime = SDL_GetTicks();
 
@@ -29,18 +47,79 @@ void Ball::Draw()
 	{
 		lastTime = currentTime;
 
-		if (positionX > (SCREEN_WIDTH - TAB_DISTANCE - tabWidth - size) &&
+		// Hit player two
+		if (positionX >= (SCREEN_WIDTH - TAB_DISTANCE - size) &&
 			positionY > playerTwoPosition &&
 			positionY < (playerTwoPosition + tabHeight) &&
-			positionX < (SCREEN_WIDTH - TAB_DISTANCE))
+			positionX + size < (SCREEN_WIDTH - TAB_DISTANCE + tabWidth)
+			)
 		{
 			directionHorizontal = LEFT;
+
+			double placeOfImpact = (positionY - playerTwoPosition) / tabHeight;
+
+			if (placeOfImpact == 0.0)
+			{
+				if (directionVertical == DOWN) directionVertical = UP;
+				else directionVertical = DOWN;
+			}
+			else
+			{
+				if (directionVertical == DOWN)
+				{
+					if (placeOfImpact <= 0.5)
+					{
+						directionVertical = UP;
+					}
+				}
+				else if (directionVertical == UP)
+				{
+					if (placeOfImpact >= 0.5)
+					{
+						directionVertical = DOWN;
+					}
+				}
+
+				ySpeedComponent = abs(speed * (1 - 2 * placeOfImpact)) * 0.6;
+				xSpeedComponent = speed - ySpeedComponent;
+			}
+
 		}
-		else if (positionX < (TAB_DISTANCE + tabWidth + 5) &&
+		// Hit player one
+		else if (positionX <= (TAB_DISTANCE + tabWidth) &&
 			positionY > playerOnePosition &&
-			positionY < (playerOnePosition + tabHeight))
+			positionY < (playerOnePosition + tabHeight) &&
+			positionX >(TAB_DISTANCE))
 		{
 			directionHorizontal = RIGHT;
+
+			double placeOfImpact = (positionY - playerOnePosition) / tabHeight;
+
+			if (placeOfImpact == 0.0)
+			{
+				if (directionVertical == DOWN) directionVertical = UP;
+				else directionVertical = DOWN;
+			}
+			else
+			{
+				if (directionVertical == DOWN)
+				{
+					if (placeOfImpact <= 0.5)
+					{
+						directionVertical = UP;
+					}
+				}
+				else if (directionVertical == UP)
+				{
+					if (placeOfImpact >= 0.5)
+					{
+						directionVertical = DOWN;
+					}
+				}
+
+				ySpeedComponent = abs(speed * (1 - 2 * placeOfImpact)) * 0.6;
+				xSpeedComponent = speed - ySpeedComponent;
+			}
 		}
 		else
 		{
@@ -58,44 +137,35 @@ void Ball::Draw()
 
 			if (positionY > SCREEN_HEIGHT - size)
 			{
-				directionVertical = DOWN;
+				directionVertical = UP;
 			}
 			else if (positionY < 0)
 			{
-				directionVertical = UP;
+				directionVertical = DOWN;
 			}
 		}
 
 		switch (directionHorizontal)
 		{
 		case RIGHT:
-			positionX += speed;
+			positionX += xSpeedComponent;
 			break;
 		case LEFT:
-			positionX -= speed;
+			positionX -= xSpeedComponent;
 			break;
 		}
 
 		switch (directionVertical)
 		{
-		case UP:
-			positionY += speed;
-			break;
 		case DOWN:
-			positionY -= speed;
+			positionY += ySpeedComponent;
+			break;
+		case UP:
+			positionY -= ySpeedComponent;
 			break;
 		default:
 			break;
 		}
 
 	}
-
-	Sprite::Draw(positionX, positionY, size, size);
-}
-
-
-void Ball::ResetPosition()
-{
-	positionX = (SCREEN_WIDTH / 2) - (size / 2);
-	positionY = (SCREEN_HEIGHT / 2) - (size / 2);
 }

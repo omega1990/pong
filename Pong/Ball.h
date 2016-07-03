@@ -22,14 +22,19 @@ public:
 	void Draw();
 	void ResetPosition();
 
-	int positionX;
-	int positionY;
+	double positionX;
+	double positionY;
 	direction directionHorizontal;
 	direction directionVertical;
 
 private:
+	void handleCollision();
 	SDL_Renderer *renderer;
 	int size;
 	int speed;		
+	double xSpeedComponent;
+	double ySpeedComponent;
+
+	unsigned int lastTime;
 };
 

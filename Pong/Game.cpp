@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
 		SDL_Event e;
 
 		Background *background = new Background(renderer);
-		Ball *ball = new Ball(renderer, 25, 3);
+		Ball *ball = new Ball(renderer, 25, 6);
 		Player *playerOne = new Player(renderer, Player::ONE);
 		Player *playerTwo = new Player(renderer, Player::TWO);
 

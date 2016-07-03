@@ -58,16 +58,16 @@ void Sprite::LoadTexture()
 	texture = newTexture;
 }
 
-void Sprite::Draw(int xPosition, int yPosition, int width, int height)
+void Sprite::Draw(double xPosition, double yPosition, int width, int height)
 {
 	// If width and height are not send to Draw function, use defaults
 	if(width == -1 && height == -1)
 		SDL_QueryTexture(texture, NULL, NULL, &width, &height);
 
-	rect->x = xPosition;
-	rect->y = yPosition;
-	rect->w = width;
-	rect->h = height;	
+	rect->x = static_cast<int>(xPosition);
+	rect->y = static_cast<int>(yPosition);
+	rect->w = static_cast<int>(width);
+	rect->h = static_cast<int>(height);
 
 	crop->x = 0;
 	crop->y = 0;
