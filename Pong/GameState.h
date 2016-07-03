@@ -10,3 +10,6 @@ extern int playerOnePosition;
 extern int playerTwoPosition;
 
 extern bool resetNeeded;
+
+extern int scorePlayerOne;
+extern int scorePlayerTwo;

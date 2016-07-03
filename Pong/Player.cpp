@@ -5,12 +5,14 @@ int tabHeight;
 int playerOnePosition;
 int playerTwoPosition;
 
-Player::Player(SDL_Renderer *passedRenderer, playerNumber passedNumber) :
-	Sprite(passedRenderer, SpriteType::PLAYER),
-	player(passedNumber)
+Player::Player(SDL_Renderer *passedRenderer, playerNumber passedNumber, SpriteType passedSpriteType) :
+	Sprite(passedRenderer, passedSpriteType),
+	player(passedNumber),
+	frameNumber(0),
+	PlayerCollision(false)
 {
 	SDL_QueryTexture(texture, NULL, NULL, &width, &height);
-	tabWidth = width;
+	tabWidth = static_cast<int>(width / numberOfFrames);
 	tabHeight = height;
 	positionY = (SCREEN_HEIGHT / 2) - (height / 2);
 
@@ -21,11 +23,12 @@ Player::Player(SDL_Renderer *passedRenderer, playerNumber passedNumber) :
 	}
 	else
 	{
-		positionX = SCREEN_WIDTH - TAB_DISTANCE;
+		positionX = SCREEN_WIDTH - TAB_DISTANCE - tabWidth;
 		playerTwoPosition = positionY;
 	}
 
 	lastTime = SDL_GetTicks();
+	lastFrameTime = lastTime;
 }
 
 
@@ -68,9 +71,20 @@ void Player::Draw()
 				positionY += TAB_SPEED;
 			}
 			playerTwoPosition = positionY;
-		}
-
+		}		
 	}
 
-	Sprite::Draw(positionX, positionY);
+	if (PlayerCollision && lastFrameTime + 100 < currentTime)
+	{
+		frameNumber++;		
+		lastFrameTime = currentTime;
+	}
+
+	if (frameNumber == numberOfFrames - 1)
+	{
+		frameNumber = 0;
+		PlayerCollision = false;
+	}
+
+	Sprite::Draw(positionX, positionY, tabWidth-1, tabHeight, frameNumber*20, 0);
 }

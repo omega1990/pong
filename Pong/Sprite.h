@@ -10,7 +10,7 @@ class Sprite
 public:
 	Sprite(SDL_Renderer *passedRenderer, SpriteType passedSpriteType);
 	~Sprite();	
-	void Draw(double xPosition, double yPosition, int width = -1, int height = -1);
+	void Draw(double xPosition, double yPosition, int width = -1, int height = -1, int offsetX = 0, int offsetY = 0);
 
 private:	
 	SDL_Renderer *renderer;

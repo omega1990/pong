@@ -1,29 +1,36 @@
 #include <SDL.h>
 #include <SDL_image.h>
+#include <SDL_ttf.h>
 #include <iostream>
+#include <string>
 
 #include "Settings.h"
 #include "Background.h"
 #include "Ball.h"
 #include "Player.h"
 #include "GameState.h"
+#include "Text.h"
 
 bool upPressed;
 bool downPressed;
 bool wPressed;
 bool sPressed;
+int scorePlayerOne;
+int scorePlayerTwo;
 
 //Starts up SDL and creates window
-bool init(SDL_Window **, SDL_Renderer **);
+static bool init(SDL_Window **, SDL_Renderer **);
 
 //Frees media and shuts down SDL
-void close(SDL_Renderer **renderer, 
+static void close(SDL_Renderer **renderer, 
 	SDL_Window **window,
 	Background**background, 
 	Ball **ball, 
-	Player **playerOne);
+	Player **playerOne,
+	Player **playerTwo);
 
-void reset(Ball **ball);
+static void reset(Ball **ball);
+static void resetGame(Ball **ball);
 
 int main(int argc, char *argv[])
 {
@@ -33,7 +40,7 @@ int main(int argc, char *argv[])
 	SDL_Window* window = NULL;
 
 	//The window renderer
-	SDL_Renderer* renderer = NULL;
+	SDL_Renderer* renderer = NULL;	
 
 	//Initialize SDL
 	if (!init(&window, &renderer))
@@ -42,14 +49,18 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 	else
-	{
+	{	
 		bool quit = false;
 		SDL_Event e;
+		std::string scoreString;
+		char const *scoreChar;
+		bool isFinished = false;
 
 		Background *background = new Background(renderer);
-		Ball *ball = new Ball(renderer, 25, 6);
-		Player *playerOne = new Player(renderer, Player::ONE);
-		Player *playerTwo = new Player(renderer, Player::TWO);
+		Player *playerOne = new Player(renderer, Player::ONE, SpriteType::PLAYERONE);
+		Player *playerTwo = new Player(renderer, Player::TWO, SpriteType::PLAYERTWO);
+		Ball *ball = new Ball(renderer, 25, 6, playerOne, playerTwo);
+		Text *text = new Text(renderer);
 
 		//While application is running
 		while (!quit)
@@ -119,11 +130,37 @@ int main(int argc, char *argv[])
 			playerTwo->Draw();
 			playerOne->Draw();
 
+			scoreString = std::to_string(scorePlayerOne);
+			scoreChar = scoreString.c_str();
+
+			text->Write(scoreChar, SCORE_ONE_X, SCORE_Y);
+
+			scoreString = std::to_string(scorePlayerTwo);
+			scoreChar = scoreString.c_str();
+			text->Write(scoreChar, SCORE_TWO_X, SCORE_Y);
+
+			if (scorePlayerOne == SCORE_FOR_VICTORY)
+			{
+				text->Write("Player One Wins!", 150, 25, 500);				
+				isFinished = true;
+			}
+			else if (scorePlayerTwo == SCORE_FOR_VICTORY)
+			{
+				text->Write("Player Two Wins!", 150, 25, 500);				
+				isFinished = true;
+			}
+
 			//Update screen
 			SDL_RenderPresent(renderer);
+			if (isFinished)
+			{
+				SDL_Delay(2000);
+				resetGame(&ball);
+				isFinished = false;
+			}
 		}
 
-		close(&renderer, &window, &background, &ball, &playerTwo);
+		close(&renderer, &window, &background, &ball, &playerOne, &playerTwo);
 
 		return 0;
 	}
@@ -132,15 +169,16 @@ int main(int argc, char *argv[])
 bool init(SDL_Window **window, SDL_Renderer **renderer)
 {
 	//Initialize SDL
-	if (SDL_Init(SDL_INIT_VIDEO) < 0)
+	if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
 	{
 		std::cout << "SDL could not initialize! SDL_Error: " << SDL_GetError() << std::endl;
 		return false;
 	}
 	else
 	{
+		TTF_Init();
 		//Create window
-		*window = SDL_CreateWindow("SDL Tutorial",
+		*window = SDL_CreateWindow("Darko's Pong",
 			SDL_WINDOWPOS_UNDEFINED,
 			SDL_WINDOWPOS_UNDEFINED,
 			SCREEN_WIDTH,
@@ -185,7 +223,9 @@ void close(SDL_Renderer **renderer,
 	SDL_Window **window, 
 	Background **background, 
 	Ball **ball, 
-	Player **playerOne)
+	Player **playerOne, 
+	Player **playerTwo
+	)
 {
 	//Destroy window    
 	SDL_DestroyRenderer(*renderer);
@@ -193,6 +233,7 @@ void close(SDL_Renderer **renderer,
 	*window = NULL;
 	*renderer = NULL;
 
+	free(*playerTwo);
 	free(*playerOne);
 	free(*background);
 	free(*ball);
@@ -204,13 +245,16 @@ void close(SDL_Renderer **renderer,
 
 void reset(Ball **ball)
 {
-	upPressed = false;
-	downPressed = false;
-	wPressed = false;
-	sPressed = false;
-
 	if(ball != NULL)
 		(*ball)->ResetPosition();
 
 	resetNeeded = false;
+}
+
+void resetGame(Ball **ball)
+{
+	reset(ball);
+
+	scorePlayerOne = 0;
+	scorePlayerTwo = 0;
 }

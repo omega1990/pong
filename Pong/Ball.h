@@ -4,6 +4,7 @@
 #include "Ball.h"
 #include "Settings.h"
 #include "GameState.h"
+#include "Player.h"
 
 class Ball : public Sprite
 {
@@ -17,7 +18,7 @@ public:
 	};
 	
 
-	Ball(SDL_Renderer *passedRenderer, int passedSize, int passedSpeed);
+	Ball(SDL_Renderer *passedRenderer, int passedSize, int passedSpeed, Player *passedPlayerOne, Player *passedPlayerTwo);
 	~Ball();
 	void Draw();
 	void ResetPosition();
@@ -34,6 +35,8 @@ private:
 	int speed;		
 	double xSpeedComponent;
 	double ySpeedComponent;
+	Player *playerOne; 
+	Player *playerTwo;
 
 	unsigned int lastTime;
 };

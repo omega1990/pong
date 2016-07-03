@@ -11,8 +11,11 @@ Sprite::Sprite(SDL_Renderer *passedRenderer, SpriteType spriteType):
 	case BALL:
 		path = "Textures/Ball.png";
 		break;
-	case PLAYER:
-		path = "Textures/TabOne.png";
+	case PLAYERONE:
+		path = "Textures/TabOneAnimated.png";
+		break;
+	case PLAYERTWO:
+		path = "Textures/TabTwoAnimated.png";
 		break;
 	default:
 		break;
@@ -58,7 +61,7 @@ void Sprite::LoadTexture()
 	texture = newTexture;
 }
 
-void Sprite::Draw(double xPosition, double yPosition, int width, int height)
+void Sprite::Draw(double xPosition, double yPosition, int width, int height, int offsetX, int offsetY)
 {
 	// If width and height are not send to Draw function, use defaults
 	if(width == -1 && height == -1)
@@ -69,11 +72,13 @@ void Sprite::Draw(double xPosition, double yPosition, int width, int height)
 	rect->w = static_cast<int>(width);
 	rect->h = static_cast<int>(height);
 
-	crop->x = 0;
-	crop->y = 0;
+	crop->x = offsetX;
+	crop->y = offsetY;
 	crop->w = width;
 	crop->h = height;
 	
 	//Render texture to screen
 	SDL_RenderCopy(renderer, texture, crop, rect);
 }
+
+

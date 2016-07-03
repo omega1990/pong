@@ -13,9 +13,11 @@ public:
 		TWO = 2
 	};
 
-	Player(SDL_Renderer *passedRenderer, playerNumber player);
+	Player(SDL_Renderer *passedRenderer, playerNumber player, SpriteType passedSpriteType);
 	~Player();
 	void Draw();
+
+	bool PlayerCollision;
 
 private:
 	int height;
@@ -24,5 +26,8 @@ private:
 	int positionX; 
 	playerNumber player;
 	unsigned int lastTime;
+	unsigned int lastFrameTime;
+	int frameNumber;
+	const int numberOfFrames = 5;
 };
 

@@ -2,7 +2,7 @@
 
 bool resetNeeded = false;
 
-Ball::Ball(SDL_Renderer *passedRenderer, int passedSize, int passedSpeed) :
+Ball::Ball(SDL_Renderer *passedRenderer, int passedSize, int passedSpeed, Player *passedPlayerOne, Player *passedPlayerTwo) :
 	Sprite(passedRenderer, SpriteType::BALL),
 	size(passedSize),
 	speed(passedSpeed),
@@ -12,7 +12,9 @@ Ball::Ball(SDL_Renderer *passedRenderer, int passedSize, int passedSpeed) :
 	directionVertical(DOWN),
 	lastTime(SDL_GetTicks()),
 	xSpeedComponent(passedSpeed / 2),
-	ySpeedComponent(passedSpeed / 2)
+	ySpeedComponent(passedSpeed / 2),
+	playerOne(passedPlayerOne),
+	playerTwo(passedPlayerTwo)
 {
 }
 
@@ -48,12 +50,13 @@ void Ball::handleCollision()
 		lastTime = currentTime;
 
 		// Hit player two
-		if (positionX >= (SCREEN_WIDTH - TAB_DISTANCE - size) &&
+		if (positionX >= (SCREEN_WIDTH - TAB_DISTANCE - tabWidth - size) &&
 			positionY > playerTwoPosition &&
 			positionY < (playerTwoPosition + tabHeight) &&
 			positionX + size < (SCREEN_WIDTH - TAB_DISTANCE + tabWidth)
 			)
 		{
+			playerTwo->PlayerCollision = true;
 			directionHorizontal = LEFT;
 
 			double placeOfImpact = (positionY - playerTwoPosition) / tabHeight;
@@ -91,6 +94,8 @@ void Ball::handleCollision()
 			positionY < (playerOnePosition + tabHeight) &&
 			positionX >(TAB_DISTANCE))
 		{
+			playerOne->PlayerCollision = true;
+
 			directionHorizontal = RIGHT;
 
 			double placeOfImpact = (positionY - playerOnePosition) / tabHeight;
@@ -127,11 +132,13 @@ void Ball::handleCollision()
 			if (positionX > SCREEN_WIDTH - size)
 			{
 				directionHorizontal = LEFT;
+				scorePlayerOne++;
 				resetNeeded = true;
 			}
 			else if (positionX < 0)
 			{
 				directionHorizontal = RIGHT;
+				scorePlayerTwo++;
 				resetNeeded = true;
 			}
 
