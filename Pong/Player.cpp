@@ -5,25 +5,28 @@ int tabHeight;
 int playerOnePosition;
 int playerTwoPosition;
 
-Player::Player(SDL_Renderer *passedRenderer, playerNumber passedNumber, SpriteType passedSpriteType) :
+Player::Player(SDL_Renderer *passedRenderer,
+	playerNumber passedNumber,
+	SpriteType passedSpriteType) :
 	Sprite(passedRenderer, passedSpriteType),
+	Object(0, 0, 0, 0),
 	player(passedNumber),
 	frameNumber(0),
 	PlayerCollision(false)
 {
-	SDL_QueryTexture(texture, NULL, NULL, &width, &height);
-	tabWidth = static_cast<int>(width / numberOfFrames);
-	tabHeight = height;
-	positionY = (SCREEN_HEIGHT / 2) - (height / 2);
+	SDL_QueryTexture(texture, NULL, NULL, &w, &h);
+
+	w = static_cast<int>(w / numberOfFrames);
+	y = (SCREEN_HEIGHT / 2) - (h / 2);
 
 	if (player == ONE)
 	{
-		positionX = TAB_DISTANCE;
+		x = PLAYER_ONE_POSITION_X;
 		playerOnePosition = positionY;
 	}
 	else
 	{
-		positionX = SCREEN_WIDTH - TAB_DISTANCE - tabWidth;
+		x = PLAYER_TWO_POSITION_X - tabWidth;
 		playerTwoPosition = positionY;
 	}
 
@@ -43,40 +46,38 @@ void Player::Draw()
 	currentTime = SDL_GetTicks();
 
 	// Change position every 5 miliseconds
-	if (lastTime + 5 < currentTime)
+	if (lastTime + PLAYER_TAB_REFRESH_VALUE < currentTime)
 	{
 		lastTime = currentTime;
 
 		// Manage separately for player one and two
 		if (player == Player::ONE)
 		{
-			if (wPressed && positionY > 0)
+			if (wPressed && y > 0)
 			{
-				positionY-=TAB_SPEED;
+				y -= TAB_SPEED;
 			}
-			else if (sPressed && positionY < SCREEN_HEIGHT-height)
+			else if (sPressed && y < SCREEN_HEIGHT - h)
 			{
-				positionY+=TAB_SPEED;
+				y += TAB_SPEED;
 			}
-			playerOnePosition = positionY;
 		}
 		else
 		{
-			if (upPressed && positionY > 0)
+			if (upPressed && y > 0)
 			{
-				positionY -= TAB_SPEED;
+				y -= TAB_SPEED;
 			}
-			else if (downPressed && positionY < SCREEN_HEIGHT - height)
+			else if (downPressed && y < SCREEN_HEIGHT - h)
 			{
-				positionY += TAB_SPEED;
+				y += TAB_SPEED;
 			}
-			playerTwoPosition = positionY;
-		}		
+		}
 	}
 
-	if (PlayerCollision && lastFrameTime + 100 < currentTime)
+	if (PlayerCollision && lastFrameTime + PLAYER_TAB_ANIMATION_REFRESH_VALUE < currentTime)
 	{
-		frameNumber++;		
+		++frameNumber;
 		lastFrameTime = currentTime;
 	}
 
@@ -86,5 +87,5 @@ void Player::Draw()
 		PlayerCollision = false;
 	}
 
-	Sprite::Draw(positionX, positionY, tabWidth-1, tabHeight, frameNumber*20, 0);
+	Sprite::Draw(x, y, w - 1, h, frameNumber*w, 0);
 }

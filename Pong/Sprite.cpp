@@ -36,10 +36,10 @@ Sprite::~Sprite()
 
 void Sprite::LoadTexture()
 {
-	//The final texture
+	// The final texture
 	SDL_Texture* newTexture = NULL;
 
-	//Load image at specified path
+	// Load image at specified path
 	SDL_Surface* loadedSurface = IMG_Load(path.c_str());
 	if (loadedSurface == NULL)
 	{
@@ -47,14 +47,14 @@ void Sprite::LoadTexture()
 	}
 	else
 	{
-		//Create texture from surface pixels
+		// Create texture from surface pixels
 		newTexture = SDL_CreateTextureFromSurface(renderer, loadedSurface);
 		if (newTexture == NULL)
 		{
 			std::cout << "Unable to create texture! SDL Error: " << SDL_GetError() << std::endl;
 		}
 
-		//Get rid of old loaded surface
+		// Get rid of old loaded surface
 		SDL_FreeSurface(loadedSurface);
 	}
 
@@ -77,7 +77,7 @@ void Sprite::Draw(double xPosition, double yPosition, int width, int height, int
 	crop->w = width;
 	crop->h = height;
 	
-	//Render texture to screen
+	// Render texture to screen
 	SDL_RenderCopy(renderer, texture, crop, rect);
 }
 

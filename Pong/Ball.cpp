@@ -4,10 +4,11 @@ bool resetNeeded = false;
 
 Ball::Ball(SDL_Renderer *passedRenderer, int passedSize, int passedSpeed, Player *passedPlayerOne, Player *passedPlayerTwo) :
 	Sprite(passedRenderer, SpriteType::BALL),
-	size(passedSize),
+	Object(static_cast<int>((SCREEN_WIDTH / 2) - (passedSize / 2)), 
+			static_cast<int>((SCREEN_HEIGHT / 2) - (passedSize / 2)), 
+			passedSize, 
+			passedSize),
 	speed(passedSpeed),
-	positionX((SCREEN_WIDTH / 2) - (passedSize / 2)),
-	positionY((SCREEN_HEIGHT / 2) - (passedSize / 2)),
 	directionHorizontal(RIGHT),
 	directionVertical(DOWN),
 	lastTime(SDL_GetTicks()),
@@ -27,14 +28,14 @@ Ball::~Ball()
 void Ball::Draw()
 {
 	handleCollision();
-	Sprite::Draw(positionX, positionY, size, size);
+	Sprite::Draw(x, y, w, h);
 }
 
 
 void Ball::ResetPosition()
 {
-	positionX = (SCREEN_WIDTH / 2) - (size / 2);
-	positionY = (SCREEN_HEIGHT / 2) - (size / 2);
+	x = (SCREEN_WIDTH / 2) - (w / 2);
+	y = (SCREEN_HEIGHT / 2) - (h / 2);
 	xSpeedComponent = speed / 2;
 	ySpeedComponent = speed / 2;
 }
@@ -45,21 +46,17 @@ void Ball::handleCollision()
 
 	currentTime = SDL_GetTicks();
 
-	if (lastTime + 5 < currentTime)
+	if (lastTime + PLAYER_TAB_REFRESH_VALUE < currentTime)
 	{
 		lastTime = currentTime;
 
 		// Hit player two
-		if (positionX >= (SCREEN_WIDTH - TAB_DISTANCE - tabWidth - size) &&
-			positionY > playerTwoPosition &&
-			positionY < (playerTwoPosition + tabHeight) &&
-			positionX + size < (SCREEN_WIDTH - TAB_DISTANCE + tabWidth)
-			)
+		if(isInCollision(static_cast<Object>(*playerTwo)))
 		{
 			playerTwo->PlayerCollision = true;
 			directionHorizontal = LEFT;
 
-			double placeOfImpact = (positionY - playerTwoPosition) / tabHeight;
+			double placeOfImpact = (y - playerTwo->y) / playerTwo->h;
 
 			if (placeOfImpact == 0.0)
 			{
@@ -88,17 +85,15 @@ void Ball::handleCollision()
 			}
 
 		}
+
 		// Hit player one
-		else if (positionX <= (TAB_DISTANCE + tabWidth) &&
-			positionY > playerOnePosition &&
-			positionY < (playerOnePosition + tabHeight) &&
-			positionX >(TAB_DISTANCE))
+		if (isInCollision(static_cast<Object>(*playerOne)))
 		{
 			playerOne->PlayerCollision = true;
 
 			directionHorizontal = RIGHT;
 
-			double placeOfImpact = (positionY - playerOnePosition) / tabHeight;
+			double placeOfImpact = (y - playerOne->y) / playerOne->h;
 
 			if (placeOfImpact == 0.0)
 			{
@@ -129,24 +124,24 @@ void Ball::handleCollision()
 		else
 		{
 			// Manage direction change
-			if (positionX > SCREEN_WIDTH - size)
+			if (x > SCREEN_WIDTH - w)
 			{
 				directionHorizontal = LEFT;
 				scorePlayerOne++;
 				resetNeeded = true;
 			}
-			else if (positionX < 0)
+			else if (x < 0)
 			{
 				directionHorizontal = RIGHT;
 				scorePlayerTwo++;
 				resetNeeded = true;
 			}
 
-			if (positionY > SCREEN_HEIGHT - size)
+			if (y > SCREEN_HEIGHT - h)
 			{
 				directionVertical = UP;
 			}
-			else if (positionY < 0)
+			else if (y < 0)
 			{
 				directionVertical = DOWN;
 			}
@@ -155,20 +150,20 @@ void Ball::handleCollision()
 		switch (directionHorizontal)
 		{
 		case RIGHT:
-			positionX += xSpeedComponent;
+			x += xSpeedComponent;
 			break;
 		case LEFT:
-			positionX -= xSpeedComponent;
+			x -= xSpeedComponent;
 			break;
 		}
 
 		switch (directionVertical)
 		{
 		case DOWN:
-			positionY += ySpeedComponent;
+			y += ySpeedComponent;
 			break;
 		case UP:
-			positionY -= ySpeedComponent;
+			y -= ySpeedComponent;
 			break;
 		default:
 			break;

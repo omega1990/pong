@@ -3,8 +3,9 @@
 #include "Sprite.h"
 #include "Settings.h"
 #include "GameState.h"
+#include "Object.h"
 
-class Player : public Sprite
+class Player : public Sprite, public Object
 {
 public:
 	enum playerNumber

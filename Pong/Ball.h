@@ -6,7 +6,7 @@
 #include "GameState.h"
 #include "Player.h"
 
-class Ball : public Sprite
+class Ball : public Sprite, public Object
 {
 public:
 	enum direction
@@ -22,16 +22,13 @@ public:
 	~Ball();
 	void Draw();
 	void ResetPosition();
-
-	double positionX;
-	double positionY;
+		
 	direction directionHorizontal;
 	direction directionVertical;
 
 private:
 	void handleCollision();
-	SDL_Renderer *renderer;
-	int size;
+	SDL_Renderer *renderer;	
 	int speed;		
 	double xSpeedComponent;
 	double ySpeedComponent;
