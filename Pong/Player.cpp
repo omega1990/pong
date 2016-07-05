@@ -14,9 +14,78 @@ Player::Player(SDL_Renderer *passedRenderer,
 	frameNumber(0),
 	PlayerCollision(false)
 {
-	SDL_QueryTexture(texture, NULL, NULL, &w, &h);
+	QueryDimensions(&w, &h, numberOfFrames);
+	setCoordinates();
 
-	w = static_cast<int>(w / numberOfFrames);
+	lastTime = SDL_GetTicks();
+	lastFrameTime = lastTime;
+
+	fireUp = new Fire(passedRenderer, x, y, SpriteType::FIREUP);
+	fireDown = new Fire(passedRenderer, x, y + h, SpriteType::FIREDOWN);
+}
+
+
+Player::~Player()
+{
+	free(fireDown);
+	free(fireUp);
+}
+
+void Player::Draw()
+{
+	unsigned int currentTime;
+
+	//currentTime = SDL_GetTicks();
+
+	// Change position every 5 miliseconds
+	//if (lastTime + PLAYER_TAB_REFRESH_VALUE < currentTime)
+	//{
+		//lastTime = currentTime;
+
+		// Manage separately for player one and two
+	if (player == Player::ONE)
+	{
+		if (wPressed && y > 0)
+		{
+			y -= TAB_SPEED;
+			fireDown->DrawAnimated(y + h);			
+		}
+		else if (sPressed && y < SCREEN_HEIGHT - h)
+		{
+			y += TAB_SPEED;
+			fireUp->DrawAnimated(y);
+		}
+	}
+	else
+	{
+		if (upPressed && y > 0)
+		{
+			y -= TAB_SPEED;
+			fireDown->DrawAnimated(y+h);
+		}
+		else if (downPressed && y < SCREEN_HEIGHT - h)
+		{
+			y += TAB_SPEED;
+			fireUp->DrawAnimated(y);
+		}
+	}
+	//}
+
+
+	if (PlayerCollision == true)
+	{
+		if (!Sprite::DrawAnimated(numberOfFrames, x, y, w, h))
+			PlayerCollision = false;
+	}
+	else
+	{
+		Sprite::Draw(x, y, w, h);
+	}
+}
+
+
+void Player::setCoordinates()
+{
 	y = (SCREEN_HEIGHT / 2) - (h / 2);
 
 	if (player == ONE)
@@ -29,63 +98,4 @@ Player::Player(SDL_Renderer *passedRenderer,
 		x = PLAYER_TWO_POSITION_X - tabWidth;
 		playerTwoPosition = positionY;
 	}
-
-	lastTime = SDL_GetTicks();
-	lastFrameTime = lastTime;
-}
-
-
-Player::~Player()
-{
-}
-
-void Player::Draw()
-{
-	unsigned int currentTime;
-
-	currentTime = SDL_GetTicks();
-
-	// Change position every 5 miliseconds
-	if (lastTime + PLAYER_TAB_REFRESH_VALUE < currentTime)
-	{
-		lastTime = currentTime;
-
-		// Manage separately for player one and two
-		if (player == Player::ONE)
-		{
-			if (wPressed && y > 0)
-			{
-				y -= TAB_SPEED;
-			}
-			else if (sPressed && y < SCREEN_HEIGHT - h)
-			{
-				y += TAB_SPEED;
-			}
-		}
-		else
-		{
-			if (upPressed && y > 0)
-			{
-				y -= TAB_SPEED;
-			}
-			else if (downPressed && y < SCREEN_HEIGHT - h)
-			{
-				y += TAB_SPEED;
-			}
-		}
-	}
-
-	if (PlayerCollision && lastFrameTime + PLAYER_TAB_ANIMATION_REFRESH_VALUE < currentTime)
-	{
-		++frameNumber;
-		lastFrameTime = currentTime;
-	}
-
-	if (frameNumber == numberOfFrames - 1)
-	{
-		frameNumber = 0;
-		PlayerCollision = false;
-	}
-
-	Sprite::Draw(x, y, w - 1, h, frameNumber*w, 0);
 }

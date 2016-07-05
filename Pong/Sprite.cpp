@@ -1,7 +1,9 @@
 #include "Sprite.h"
 
-Sprite::Sprite(SDL_Renderer *passedRenderer, SpriteType spriteType):
-	renderer(passedRenderer)
+Sprite::Sprite(SDL_Renderer *passedRenderer, SpriteType spriteType) :
+	renderer(passedRenderer),
+	frameNumber(0),
+	lastFrameTime(0)
 {
 	switch (spriteType)
 	{
@@ -17,6 +19,11 @@ Sprite::Sprite(SDL_Renderer *passedRenderer, SpriteType spriteType):
 	case PLAYERTWO:
 		path = "Textures/TabTwoAnimated.png";
 		break;
+	case FIREDOWN:
+		path = "Textures/FireDownAnimated.png";
+		break;
+	case FIREUP:
+		path = "Textures/FireUpAnimated.png";
 	default:
 		break;
 	}
@@ -62,7 +69,7 @@ void Sprite::LoadTexture()
 }
 
 void Sprite::Draw(double xPosition, double yPosition, int width, int height, int offsetX, int offsetY)
-{
+{	
 	// If width and height are not send to Draw function, use defaults
 	if(width == -1 && height == -1)
 		SDL_QueryTexture(texture, NULL, NULL, &width, &height);
@@ -80,5 +87,38 @@ void Sprite::Draw(double xPosition, double yPosition, int width, int height, int
 	// Render texture to screen
 	SDL_RenderCopy(renderer, texture, crop, rect);
 }
+
+void Sprite::QueryDimensions(int *width, int *height, int numberOfFrames) const
+{
+	SDL_QueryTexture(texture, NULL, NULL, width, height);
+	*width /= numberOfFrames;	
+}
+
+
+bool Sprite::DrawAnimated(const int numberOfFrames, 
+	const double xPosition, 
+	double yPosition, 
+	const int width, 
+	const int height, 
+	const int animationPeriod)
+{		
+	currentTime = SDL_GetTicks();
+
+	Draw(xPosition, yPosition, width, height, frameNumber*width, 0);
+	
+	if (lastFrameTime + 100 < currentTime)
+	{
+		lastFrameTime = currentTime;
+		if (frameNumber == numberOfFrames - 1)
+		{
+			frameNumber = 0;
+			return false;
+		}		
+		frameNumber++;
+	}	
+
+	return true;
+}
+
 
 

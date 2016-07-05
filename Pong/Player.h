@@ -4,6 +4,7 @@
 #include "Settings.h"
 #include "GameState.h"
 #include "Object.h"
+#include "Fire.h"
 
 class Player : public Sprite, public Object
 {
@@ -30,5 +31,9 @@ private:
 	unsigned int lastFrameTime;
 	int frameNumber;
 	const int numberOfFrames = 5;
+	Fire *fireUp;
+	Fire *fireDown;
+
+	void setCoordinates();
 };
 

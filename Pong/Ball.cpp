@@ -44,11 +44,11 @@ void Ball::handleCollision()
 {
 	unsigned int currentTime;
 
-	currentTime = SDL_GetTicks();
+	//currentTime = SDL_GetTicks();
 
-	if (lastTime + PLAYER_TAB_REFRESH_VALUE < currentTime)
-	{
-		lastTime = currentTime;
+	/*if (lastTime + PLAYER_TAB_REFRESH_VALUE < currentTime)
+	{*/
+		//lastTime = currentTime;
 
 		// Hit player two
 		if(isInCollision(static_cast<Object>(*playerTwo)))
@@ -169,5 +169,5 @@ void Ball::handleCollision()
 			break;
 		}
 
-	}
+	//}
 }

@@ -1,6 +1,7 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
+#include <SDL_thread.h>
 #include <iostream>
 #include <string>
 
@@ -32,6 +33,18 @@ static void close(SDL_Renderer **renderer,
 static void reset(Ball **ball);
 static void resetGame(Ball **ball);
 
+static bool quit = false;
+
+int my_thread(void *data, Ball *ball)
+{
+	//While the program is not over
+	while (!quit)
+	{
+		ball->Draw();
+	}	
+	return 0;
+}
+
 int main(int argc, char *argv[])
 {
 	reset(NULL);
@@ -40,7 +53,10 @@ int main(int argc, char *argv[])
 	SDL_Window* window = NULL;
 
 	//The window renderer
-	SDL_Renderer* renderer = NULL;	
+	SDL_Renderer* renderer = NULL;
+
+	//The thread for moving the ball
+	SDL_Thread *handleBallThread = NULL;
 
 	//Initialize SDL
 	if (!init(&window, &renderer))
@@ -50,7 +66,6 @@ int main(int argc, char *argv[])
 	}
 	else
 	{	
-		bool quit = false;
 		SDL_Event e;
 		std::string scoreString;
 		char const *scoreChar;
@@ -158,6 +173,8 @@ int main(int argc, char *argv[])
 				resetGame(&ball);
 				isFinished = false;
 			}
+
+			SDL_Delay(5);
 		}
 
 		close(&renderer, &window, &background, &ball, &playerOne, &playerTwo);
