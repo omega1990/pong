@@ -18,6 +18,7 @@ public:
 		const int height = -1, 
 		const int animationPeriod = 100);
 	void QueryDimensions(int *width, int *height, int numberOfFrames) const;
+	void ChangeTexture(SpriteType spriteType);
 
 private:	
 	SDL_Renderer *renderer;

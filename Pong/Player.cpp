@@ -33,16 +33,7 @@ Player::~Player()
 
 void Player::Draw()
 {
-	unsigned int currentTime;
-
-	//currentTime = SDL_GetTicks();
-
-	// Change position every 5 miliseconds
-	//if (lastTime + PLAYER_TAB_REFRESH_VALUE < currentTime)
-	//{
-		//lastTime = currentTime;
-
-		// Manage separately for player one and two
+	// Manage separately for player one and two
 	if (player == Player::ONE)
 	{
 		if (wPressed && y > 0)
@@ -69,7 +60,6 @@ void Player::Draw()
 			fireUp->DrawAnimated(y);
 		}
 	}
-	//}
 
 
 	if (PlayerCollision == true)
@@ -98,4 +88,9 @@ void Player::setCoordinates()
 		x = PLAYER_TWO_POSITION_X - tabWidth;
 		playerTwoPosition = positionY;
 	}
+}
+
+void Player::ResetDimensions()
+{
+	QueryDimensions(&w, &h, numberOfFrames);
 }

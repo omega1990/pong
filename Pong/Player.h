@@ -18,6 +18,7 @@ public:
 	Player(SDL_Renderer *passedRenderer, playerNumber player, SpriteType passedSpriteType);
 	~Player();
 	void Draw();
+	void ResetDimensions();
 
 	bool PlayerCollision;
 

@@ -11,6 +11,7 @@
 #include "Player.h"
 #include "GameState.h"
 #include "Text.h"
+#include "PowerupController.h"
 
 bool upPressed;
 bool downPressed;
@@ -34,6 +35,7 @@ static void reset(Ball **ball);
 static void resetGame(Ball **ball);
 
 static bool quit = false;
+
 
 int my_thread(void *data, Ball *ball)
 {
@@ -76,6 +78,7 @@ int main(int argc, char *argv[])
 		Player *playerTwo = new Player(renderer, Player::TWO, SpriteType::PLAYERTWO);
 		Ball *ball = new Ball(renderer, 25, 6, playerOne, playerTwo);
 		Text *text = new Text(renderer);
+		PowerupController *powerupController = new PowerupController(renderer, ball, playerOne, playerTwo);
 
 		//While application is running
 		while (!quit)
@@ -165,8 +168,23 @@ int main(int argc, char *argv[])
 				isFinished = true;
 			}
 
+			if (powerupController->powerUpOnField == false && powerupController->IsTimeForPowerUp())
+			{
+				powerupController->SpawnPowerup();
+			}
+
+			if (powerupController->powerUpOnField)
+			{
+				powerupController->DrawPowerup();
+				powerupController->CheckCollision();
+			}
+
+			powerupController->TriggerDeactivation();
+			
+
 			//Update screen
 			SDL_RenderPresent(renderer);
+
 			if (isFinished)
 			{
 				SDL_Delay(2000);

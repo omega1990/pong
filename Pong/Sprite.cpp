@@ -5,28 +5,7 @@ Sprite::Sprite(SDL_Renderer *passedRenderer, SpriteType spriteType) :
 	frameNumber(0),
 	lastFrameTime(0)
 {
-	switch (spriteType)
-	{
-	case BACKGROUND:
-		path = "Textures/PongBackground.png";
-		break;
-	case BALL:
-		path = "Textures/Ball.png";
-		break;
-	case PLAYERONE:
-		path = "Textures/TabOneAnimated.png";
-		break;
-	case PLAYERTWO:
-		path = "Textures/TabTwoAnimated.png";
-		break;
-	case FIREDOWN:
-		path = "Textures/FireDownAnimated.png";
-		break;
-	case FIREUP:
-		path = "Textures/FireUpAnimated.png";
-	default:
-		break;
-	}
+	ChangeTexture(spriteType);
 	
 	rect = new SDL_Rect();
 	crop = new SDL_Rect();
@@ -64,6 +43,9 @@ void Sprite::LoadTexture()
 		// Get rid of old loaded surface
 		SDL_FreeSurface(loadedSurface);
 	}
+	
+	if (texture != nullptr)
+		SDL_DestroyTexture(texture);
 
 	texture = newTexture;
 }
@@ -121,4 +103,42 @@ bool Sprite::DrawAnimated(const int numberOfFrames,
 }
 
 
+void Sprite::ChangeTexture(SpriteType spriteType)
+{
+	switch (spriteType)
+	{
+	case BACKGROUND:
+		path = "Textures/PongBackground.png";
+		break;
+	case BALL:
+		path = "Textures/Ball.png";
+		break;
+	case PLAYERONE:
+		path = "Textures/TabOneAnimated.png";
+		break;
+	case PLAYERTWO:
+		path = "Textures/TabTwoAnimated.png";
+		break;
+	case FIREDOWN:
+		path = "Textures/FireDownAnimated.png";
+		break;
+	case FIREUP:
+		path = "Textures/FireUpAnimated.png";
+		break;
+	case POWERUP_GROW:
+		path = "Textures/PU_Grow.png";
+		break;
+	case PLAYERONEGROW:
+		path = "Textures/OneAnimatedGrow.png";
+		break;
+	case PLAYERTWOGROW:
+		path = "Textures/TwoAnimatedGrow.png";
+		break;
+	default:
+		break;
+	}
+
+
+	LoadTexture();
+}
 
