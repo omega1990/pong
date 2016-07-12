@@ -21,13 +21,13 @@ public:
 	void ResetDimensions();
 
 	bool PlayerCollision;
+	playerNumber PlayerNumber;
 
 private:
 	int height;
 	int width;
 	int positionY;
 	int positionX; 
-	playerNumber player;
 	unsigned int lastTime;
 	unsigned int lastFrameTime;
 	int frameNumber;

@@ -2,6 +2,9 @@
 #include "Ball.h"
 #include "Player.h"
 #include "Powerup.h"
+#include "PowerupGrow.h"
+#include "PowerupBallSpeed.h"
+#include "Settings.h"
 
 class PowerupController
 {
@@ -9,7 +12,8 @@ public:
 
 	enum PowerUp
 	{
-		GROW = 0
+		GROW = 0,
+		BALL_SPEED = 1
 	};
 
 	PowerupController(SDL_Renderer *passedRenderer, Ball *passedBall, Player *passedPlayerOne, Player *passedPlayerTwo);

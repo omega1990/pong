@@ -10,7 +10,7 @@ Player::Player(SDL_Renderer *passedRenderer,
 	SpriteType passedSpriteType) :
 	Sprite(passedRenderer, passedSpriteType),
 	Object(0, 0, 0, 0),
-	player(passedNumber),
+	PlayerNumber(passedNumber),
 	frameNumber(0),
 	PlayerCollision(false)
 {
@@ -34,7 +34,7 @@ Player::~Player()
 void Player::Draw()
 {
 	// Manage separately for player one and two
-	if (player == Player::ONE)
+	if (PlayerNumber == Player::ONE)
 	{
 		if (wPressed && y > 0)
 		{
@@ -78,7 +78,7 @@ void Player::setCoordinates()
 {
 	y = (SCREEN_HEIGHT / 2) - (h / 2);
 
-	if (player == ONE)
+	if (PlayerNumber == ONE)
 	{
 		x = PLAYER_ONE_POSITION_X;
 		playerOnePosition = positionY;

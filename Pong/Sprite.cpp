@@ -134,6 +134,12 @@ void Sprite::ChangeTexture(SpriteType spriteType)
 	case PLAYERTWOGROW:
 		path = "Textures/TwoAnimatedGrow.png";
 		break;
+	case BALL_SPEED:
+		path = "Textures/BallSpeed.png";
+		break;
+	case POWERUP_BALL_SPEED:
+		path = "Textures/PU_BallSpeed.png";
+		break;
 	default:
 		break;
 	}

@@ -9,7 +9,7 @@ public:
 	~PowerupGrow();
 
 	virtual void ActivatePowerup() override;
-	virtual void DeactivatePowerup(Player::playerNumber player) override;
+	virtual void DeactivatePowerup() override;
 
 };
 

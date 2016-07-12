@@ -54,6 +54,9 @@
     <ClCompile Include="PowerupController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PowerupBallSpeed.cpp">
+      <Filter>Source Files\Powerups</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\ja.jpg">
@@ -99,6 +102,9 @@
     </ClInclude>
     <ClInclude Include="PowerupController.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PowerupBallSpeed.h">
+      <Filter>Header Files\Powerups</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

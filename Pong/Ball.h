@@ -25,11 +25,11 @@ public:
 		
 	direction directionHorizontal;
 	direction directionVertical;
+	int speed;		
 
 private:
 	void handleCollision();
 	SDL_Renderer *renderer;	
-	int speed;		
 	double xSpeedComponent;
 	double ySpeedComponent;
 	Player *playerOne; 

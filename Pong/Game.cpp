@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
 		Background *background = new Background(renderer);
 		Player *playerOne = new Player(renderer, Player::ONE, SpriteType::PLAYERONE);
 		Player *playerTwo = new Player(renderer, Player::TWO, SpriteType::PLAYERTWO);
-		Ball *ball = new Ball(renderer, 25, 6, playerOne, playerTwo);
+		Ball *ball = new Ball(renderer, 25, DEFAULT_BALL_SPEED, playerOne, playerTwo);
 		Text *text = new Text(renderer);
 		PowerupController *powerupController = new PowerupController(renderer, ball, playerOne, playerTwo);
 
