@@ -29,7 +29,7 @@ void pushPowerup(Powerup *powerupToPush, Player *player)
 		return;
 	}
 
-	powerup *current = head;	
+	powerup *current = head;
 
 	while (current)
 	{
@@ -41,7 +41,7 @@ void pushPowerup(Powerup *powerupToPush, Player *player)
 
 		current = current->next;
 	}
-	
+
 	current = createPowerup(powerupToPush, player);
 }
 
@@ -63,7 +63,7 @@ void popPowerup(powerup *powerupToPop)
 		{
 			if (previous)
 			{
-				previous->next = current->next;				
+				previous->next = current->next;
 			}
 
 			if (current == head)
@@ -79,7 +79,7 @@ void popPowerup(powerup *powerupToPop)
 		previous = current;
 		current = current->next;
 	}
-	
+
 }
 
 void destroyPowerups()
@@ -90,6 +90,7 @@ void destroyPowerups()
 	{
 		powerup *powerUpToDestroy = current;
 		current = current->next;
+		powerUpToDestroy->currentPowerup->DeactivatePowerup();
 		powerUpToDestroy = nullptr;
 		delete powerUpToDestroy;
 	}
@@ -125,7 +126,7 @@ void PowerupController::PowerupSpawn()
 {
 	x = rand() % ((SCREEN_WIDTH - TAB_DISTANCE - playerTwo->w - 100) - (TAB_DISTANCE + playerOne->w + 100) + 1) + (TAB_DISTANCE + playerOne->w + 100);
 	y = rand() % ((SCREEN_HEIGHT - 100) - 99) + 99;
-	
+
 	int powerUp = rand() % 2 + 0;
 
 	switch (static_cast<PowerUp>(powerUp))
@@ -147,7 +148,7 @@ void PowerupController::DrawPowerup()
 {
 	if (currentPowerup)
 	{
-		currentPowerup->Draw(x, y);
+		currentPowerup->DrawAnimated(5, x, y);
 	}
 }
 

@@ -64,7 +64,7 @@ void Player::Draw()
 
 	if (PlayerCollision == true)
 	{
-		if (!Sprite::DrawAnimated(numberOfFrames, x, y, w, h))
+		if (!Sprite::DrawAnimated(numberOfFrames, x, y))
 			PlayerCollision = false;
 	}
 	else

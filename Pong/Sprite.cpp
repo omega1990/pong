@@ -80,13 +80,16 @@ void Sprite::QueryDimensions(int *width, int *height, int numberOfFrames) const
 bool Sprite::DrawAnimated(const int numberOfFrames, 
 	const double xPosition, 
 	double yPosition, 
-	const int width, 
-	const int height, 
+	int width, 
+	int height, 
 	const int animationPeriod)
 {		
+	if (width == -1 && height == -1)
+		SDL_QueryTexture(texture, NULL, NULL, &width, &height);
+
 	currentTime = SDL_GetTicks();
 
-	Draw(xPosition, yPosition, width, height, frameNumber*width, 0);
+	Draw(xPosition, yPosition, width/numberOfFrames, height, frameNumber*(width/numberOfFrames), 0);
 	
 	if (lastFrameTime + 100 < currentTime)
 	{

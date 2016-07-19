@@ -22,7 +22,7 @@ Fire::~Fire()
 void Fire::DrawAnimated(double y)
 {
 	if(fireType == SpriteType::FIREUP)
-		Sprite::DrawAnimated(numberOfFrames, x, y - h, w, h);
+		Sprite::DrawAnimated(numberOfFrames, x, y - h);
 	else
-		Sprite::DrawAnimated(numberOfFrames, x, y, w, h);
+		Sprite::DrawAnimated(numberOfFrames, x, y);
 }

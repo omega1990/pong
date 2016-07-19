@@ -14,8 +14,8 @@ public:
 	bool DrawAnimated(const int numberOfFrames, 
 		const double xPosition, 
 		const double yPosition, 
-		const int width = -1,
-		const int height = -1, 
+		int width = -1,
+		int height = -1, 
 		const int animationPeriod = 100);
 	void QueryDimensions(int *width, int *height, int numberOfFrames) const;
 	void ChangeTexture(SpriteType spriteType);
