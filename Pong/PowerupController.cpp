@@ -121,7 +121,7 @@ bool PowerupController::IsTimeForPowerUp()
 	return false;
 }
 
-void PowerupController::SpawnPowerup()
+void PowerupController::PowerupSpawn()
 {
 	x = rand() % ((SCREEN_WIDTH - TAB_DISTANCE - playerTwo->w - 100) - (TAB_DISTANCE + playerOne->w + 100) + 1) + (TAB_DISTANCE + playerOne->w + 100);
 	y = rand() % ((SCREEN_HEIGHT - 100) - 99) + 99;
@@ -182,4 +182,9 @@ void PowerupController::TriggerDeactivation()
 		}
 		current = current->next;
 	}
+}
+
+void PowerupController::PowerupDeactivateAll()
+{
+	destroyPowerups();
 }

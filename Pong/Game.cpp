@@ -170,7 +170,7 @@ int main(int argc, char *argv[])
 
 			if (powerupController->powerUpOnField == false && powerupController->IsTimeForPowerUp())
 			{
-				powerupController->SpawnPowerup();
+				powerupController->PowerupSpawn();
 			}
 
 			if (powerupController->powerUpOnField)
@@ -181,7 +181,6 @@ int main(int argc, char *argv[])
 
 			powerupController->TriggerDeactivation();
 			
-
 			//Update screen
 			SDL_RenderPresent(renderer);
 
@@ -189,6 +188,7 @@ int main(int argc, char *argv[])
 			{
 				SDL_Delay(2000);
 				resetGame(&ball);
+				powerupController->PowerupDeactivateAll();
 				isFinished = false;
 			}
 

@@ -18,12 +18,14 @@ public:
 
 	PowerupController(SDL_Renderer *passedRenderer, Ball *passedBall, Player *passedPlayerOne, Player *passedPlayerTwo);
 	~PowerupController();
-	void SpawnPowerup();
+	void PowerupSpawn();
+	void PowerupDeactivateAll();
 	bool IsTimeForPowerUp();
 	Powerup *currentPowerup;
 	void CheckCollision();
 	void DrawPowerup();
 	void TriggerDeactivation();
+
 	bool powerUpOnField;
 	unsigned int powerupTimer;
 
