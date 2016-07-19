@@ -11,63 +11,38 @@ typedef struct powerup
 
 static powerup *head;
 
+powerup* createPowerup(Powerup *powerupToPush, Player *player)
+{
+	powerup *createdPowerup = new powerup;
+	createdPowerup->currentPowerup = powerupToPush;
+	createdPowerup->time = SDL_GetTicks();
+	createdPowerup->next = nullptr;
+	createdPowerup->currentPowerup->player = player;
+	return createdPowerup;
+}
+
 void pushPowerup(Powerup *powerupToPush, Player *player)
 {
 	if (head == nullptr)
 	{
-		std::cout << "Creating new" << std::endl;
-
-		head = new powerup;
-		head->currentPowerup = powerupToPush;
-		head->time = SDL_GetTicks();
-		head->next = nullptr;
-		head->currentPowerup->player = player;
+		head = createPowerup(powerupToPush, player);
 		return;
 	}
 
-	powerup *current = head;
-	
+	powerup *current = head;	
 
-	// Loop until the last FIFO buffer element
-	while (current->next != nullptr)
+	while (current)
 	{
-		std::cout << player->PlayerNumber << "==" << current->currentPowerup->player->PlayerNumber << std::endl;
-
-		// If player collected the same power-up, just extend the power-up duration
 		if ((typeid(*(current->currentPowerup)).name() == typeid(*powerupToPush).name()) &&
 			(player == current->currentPowerup->player))
 		{
-			std::cout << "Extending!" << std::endl;
-			current->time = SDL_GetTicks();
-			// There is no need to add more power-ups because existing one has been extended
-			return;
+			break;
 		}
 
 		current = current->next;
 	}
-
-	// If there is only one power-up in FIFO buffer
-	if (current->next == nullptr)
-	{
-		std::cout << player->PlayerNumber << "==" << current->currentPowerup->player->PlayerNumber << std::endl;
-
-		// If player collected the same power-up, just extend the power-up duration
-		if ((typeid(*(current->currentPowerup)).name() == typeid(*powerupToPush).name()) &&
-			(player == current->currentPowerup->player))
-		{
-			std::cout << "Extending!" << std::endl;
-			current->time = SDL_GetTicks();
-			// There is no need to add more power-ups because existing one has been extended
-			return;
-		}
-	}
-
-	std::cout << "Creating new" << std::endl;
-	current->next = new powerup;
-	current->next->currentPowerup = powerupToPush;
-	current->next->currentPowerup->player = player;
-	current->next->time = SDL_GetTicks();
-	current->next->next = nullptr;
+	
+	current = createPowerup(powerupToPush, player);
 }
 
 void popPowerup(powerup *powerupToPop)
@@ -78,41 +53,33 @@ void popPowerup(powerup *powerupToPop)
 		return;
 	}
 
-	// There is only power-up in buffer
-	if (head->next == nullptr)
-	{
-		head = nullptr;
-		delete head;
-		return;
-	}
-
-	powerup *current = head;
 	powerup *previous = nullptr;
+	powerup *current = head;
 
 	while (current)
 	{
 		if ((typeid(*(current->currentPowerup)).name() == typeid(*(powerupToPop->currentPowerup)).name()) &&
 			(powerupToPop->currentPowerup->player == current->currentPowerup->player))
 		{
-			if (!previous)
+			if (previous)
 			{
-				powerup *powerUpToDelete = head;
+				previous->next = current->next;				
+			}
+
+			if (current == head)
+			{
 				head = head->next;
-				powerUpToDelete = nullptr;
-				delete powerUpToDelete;
-				return;
 			}
-			else
-			{
-				previous = current->next;
-				current = nullptr;
-				delete current;
-				return;
-			}
+
+			current = nullptr;
+			delete current;
+			return;
 		}
+
 		previous = current;
 		current = current->next;
 	}
+	
 }
 
 void destroyPowerups()

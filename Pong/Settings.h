@@ -23,7 +23,7 @@ const int PLAYER_TWO_POSITION_X = SCREEN_WIDTH - TAB_DISTANCE;
 
 // Gameplay constants
 const int SCORE_FOR_VICTORY = 10;
-const int POWERUP_FREQUENCY = 1;
+const int POWERUP_FREQUENCY = 501;
 const int POWERUP_DURATION = 5000;
 const int DEFAULT_BALL_SPEED = 6;
 const int HIGH_BALL_SPEED = 8;
