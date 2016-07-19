@@ -15,13 +15,13 @@ PowerupBallSpeed::~PowerupBallSpeed()
 
 void PowerupBallSpeed::ActivatePowerup()
 {
-	ball->speed = HIGH_BALL_SPEED;
+	ball->ChangeSpeed(HIGH_BALL_SPEED);	
 	ball->ChangeTexture(BALL_SPEED);
 }
 
 void PowerupBallSpeed::DeactivatePowerup()
 {
-	ball->speed = DEFAULT_BALL_SPEED;
+	ball->ChangeSpeed(DEFAULT_BALL_SPEED);
 	ball->ChangeTexture(BALL);
 }
 

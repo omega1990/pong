@@ -22,6 +22,7 @@ public:
 	~Ball();
 	void Draw();
 	void ResetPosition();
+	void ChangeSpeed(double amount);
 		
 	direction directionHorizontal;
 	direction directionVertical;

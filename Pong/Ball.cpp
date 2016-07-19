@@ -161,3 +161,13 @@ void Ball::handleCollision()
 			break;
 		}
 }
+
+
+void Ball::ChangeSpeed(double amount)
+{
+	ySpeedComponent /= speed;
+	ySpeedComponent *= amount;
+
+	speed = amount;
+	xSpeedComponent = speed - ySpeedComponent;
+}
