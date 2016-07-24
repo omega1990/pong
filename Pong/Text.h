@@ -7,7 +7,13 @@
 class Text
 {
 public:
-	Text(SDL_Renderer *passedRenderer);
+	enum Font
+	{
+		DIESEL=0, 
+		OUTLAW=1
+	};
+
+	Text(SDL_Renderer *passedRenderer, Font passedFont);
 	~Text();
 	void Write(const char *text, int x, int y, int width = 50, int height = 100);
 

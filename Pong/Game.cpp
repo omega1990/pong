@@ -33,7 +33,10 @@ static void close(SDL_Renderer **renderer,
 
 static void reset(Ball **ball);
 static void resetGame(Ball **ball);
-static void matchFinished(Ball *ball, PowerupController *powerupController);
+static void matchFinished(Ball *ball, PowerupController *powerupController, SDL_Renderer *renderer);
+static void controlPowerups(PowerupController *powerupController);
+static void controlScore(Text *scoreText, Text *winningText, SDL_Renderer *renderer, Ball *ball, PowerupController* powerupController);
+static void drawMainSprites(Background *background, Ball *ball, Player *playerOne, Player *playerTwo);
 
 static bool quit = false;
 
@@ -68,7 +71,9 @@ int main(int argc, char *argv[])
 		Player *playerOne = new Player(renderer, Player::ONE, SpriteType::PLAYERONE);
 		Player *playerTwo = new Player(renderer, Player::TWO, SpriteType::PLAYERTWO);
 		Ball *ball = new Ball(renderer, 25, DEFAULT_BALL_SPEED, playerOne, playerTwo);
-		Text *text = new Text(renderer);
+		Text *scoreText = new Text(renderer, Text::OUTLAW);
+		Text *winningText = new Text(renderer, Text::DIESEL);
+
 		PowerupController *powerupController = new PowerupController(renderer, ball, playerOne, playerTwo);
 
 		//While application is running
@@ -134,46 +139,12 @@ int main(int argc, char *argv[])
 			//Clear screen
 			SDL_RenderClear(renderer);
 
-			background->Draw(0, 0);
-			ball->Draw();
-			playerTwo->Draw();
-			playerOne->Draw();
-
-			scoreString = std::to_string(scorePlayerOne);
-			scoreChar = scoreString.c_str();
-
-			text->Write(scoreChar, SCORE_ONE_X, SCORE_Y);
-
-			scoreString = std::to_string(scorePlayerTwo);
-			scoreChar = scoreString.c_str();
-			text->Write(scoreChar, SCORE_TWO_X, SCORE_Y);
-
-			if (scorePlayerOne == SCORE_FOR_VICTORY)
-			{
-				text->Write("Player One Wins!", 150, 25, 500);				
-				matchFinished(ball, powerupController);
-			}
-			else if (scorePlayerTwo == SCORE_FOR_VICTORY)
-			{
-				text->Write("Player Two Wins!", 150, 25, 500);				
-				matchFinished(ball, powerupController);
-			}
-
-			if (powerupController->powerUpOnField == false && powerupController->IsTimeForPowerUp())
-			{
-				powerupController->PowerupSpawn();
-			}
-
-			if (powerupController->powerUpOnField)
-			{
-				powerupController->DrawPowerup();
-				powerupController->CheckCollision();
-			}
-
-			powerupController->TriggerDeactivation();
+			drawMainSprites(background, ball, playerOne, playerTwo);			
+			controlScore(scoreText, winningText, renderer, ball, powerupController);
+			controlPowerups(powerupController);		
 
 			//Update screen
-			SDL_RenderPresent(renderer);	
+			SDL_RenderPresent(renderer);			
 
 			SDL_Delay(5);
 		}
@@ -184,7 +155,7 @@ int main(int argc, char *argv[])
 	}
 }
 
-bool init(SDL_Window **window, SDL_Renderer **renderer)
+static bool init(SDL_Window **window, SDL_Renderer **renderer)
 {
 	//Initialize SDL
 	if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
@@ -237,7 +208,7 @@ bool init(SDL_Window **window, SDL_Renderer **renderer)
 	return true;
 }
 
-void close(SDL_Renderer **renderer, 
+static void close(SDL_Renderer **renderer, 
 	SDL_Window **window, 
 	Background **background, 
 	Ball **ball, 
@@ -261,7 +232,7 @@ void close(SDL_Renderer **renderer,
 	SDL_Quit();
 }
 
-void reset(Ball **ball)
+static void reset(Ball **ball)
 {
 	if(ball != NULL)
 		(*ball)->ResetPosition();
@@ -269,7 +240,7 @@ void reset(Ball **ball)
 	resetNeeded = false;
 }
 
-void resetGame(Ball **ball)
+static void resetGame(Ball **ball)
 {
 	reset(ball);
 
@@ -277,9 +248,57 @@ void resetGame(Ball **ball)
 	scorePlayerTwo = 0;
 }
 
-void matchFinished(Ball *ball, PowerupController *powerupController)
+static void matchFinished(Ball *ball, PowerupController *powerupController, SDL_Renderer *renderer)
 {
+	SDL_RenderPresent(renderer);
 	SDL_Delay(2000);
 	resetGame(&ball);
-	powerupController->PowerupDeactivateAll();	
+	powerupController->PowerupDeactivateAll();		
+}
+
+static void controlPowerups(PowerupController *powerupController)
+{
+	if (powerupController->powerUpOnField == false && powerupController->IsTimeForPowerUp())
+	{
+		powerupController->PowerupSpawn();
+	}
+
+	if (powerupController->powerUpOnField)
+	{
+		powerupController->DrawPowerup();
+		powerupController->CheckCollision();
+	}
+
+	powerupController->TriggerDeactivation();
+}
+
+static void controlScore(Text *scoreText, Text *winningText, SDL_Renderer *renderer, Ball *ball, PowerupController* powerupController)
+{
+    std::string scoreString = std::to_string(scorePlayerOne);
+	const char* scoreChar = scoreString.c_str();
+
+	scoreText->Write(scoreChar, SCORE_ONE_X, SCORE_Y);
+
+	scoreString = std::to_string(scorePlayerTwo);
+	scoreChar = scoreString.c_str();
+	scoreText->Write(scoreChar, SCORE_TWO_X, SCORE_Y);
+
+	if (scorePlayerOne == SCORE_FOR_VICTORY)
+	{
+		winningText->Write("Player One Wins!", 160, 65, 500);
+		matchFinished(ball, powerupController, renderer);
+	}
+	else if (scorePlayerTwo == SCORE_FOR_VICTORY)
+	{
+		winningText->Write("Player Two Wins!", 160, 65, 500);
+		matchFinished(ball, powerupController, renderer);
+	}
+}
+
+static void drawMainSprites(Background *background, Ball *ball, Player *playerOne, Player *playerTwo)
+{
+	background->Draw(0, 0);
+	ball->Draw();
+	playerOne->Draw();
+	playerTwo->Draw();
 }

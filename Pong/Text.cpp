@@ -2,10 +2,22 @@
 
 
 
-Text::Text(SDL_Renderer *passedRenderer):
+Text::Text(SDL_Renderer *passedRenderer, Font passedFont):
 	renderer(passedRenderer)
 {
-	font = TTF_OpenFont("Fonts/outlaw_regular.ttf", 272);
+	switch (passedFont)
+	{
+	case OUTLAW:
+		font = TTF_OpenFont("Fonts/outlaw_regular.ttf", 272);
+		break;
+	case DIESEL:
+		font = TTF_OpenFont("Fonts/DIESELPUNK.ttf", 272);
+		break;
+	default:
+		// Do nothing 
+		break;
+	}
+
 	//color = { 247, 227, 165};
 	color = { 0, 0, 0 };
 }
