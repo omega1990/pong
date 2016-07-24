@@ -2,9 +2,10 @@
 #include <SDL_ttf.h>
 
 #include "Sprite.h"
+#include "Object.h"
 
 
-class Text
+class Text : public Object
 {
 public:
 	enum Font
@@ -13,23 +14,23 @@ public:
 		OUTLAW=1
 	};
 
-	Text(SDL_Renderer *passedRenderer, Font passedFont);
+	Text(SDL_Renderer *passedRenderer, Font passedFont, int passedX = -1, int passedY = -1, int passedW = 50, int passedH = 100);
 	~Text();
-	void Write(const char *text, int x, int y, int width = 50, int height = 100);
-	void WriteSelected(const char *text, int x, int y, int width = 50, int height = 100);
-	bool Selected;
-	void SetSelected(bool selected);
-
-
+	void Write(const char *text, int x = -1, int y = -1, int width = 50, int height = 100);
+	
+	
 private:
 	TTF_Font *font;
 	SDL_Renderer *renderer;
-	SDL_Color color;
 	SDL_Texture* message;
 	std::string text;
 	SDL_Rect messageRect;
-	int colorAdd;
+
+protected:
 	void resetColor();
 	const int selHiglightLimit;
+	SDL_Color color;
+	int colorAdd;
+
 };
 

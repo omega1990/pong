@@ -168,6 +168,6 @@ void Ball::ChangeSpeed(double amount)
 	ySpeedComponent /= speed;
 	ySpeedComponent *= amount;
 
-	speed = amount;
+	speed = static_cast<int>(amount);
 	xSpeedComponent = speed - ySpeedComponent;
 }

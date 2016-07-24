@@ -89,6 +89,9 @@ void PowerupController::TriggerDeactivation()
 
 void PowerupController::PowerupDeactivateAll()
 {
+	powerUpOnField = false;
+	currentPowerup = nullptr;
+	delete currentPowerup;
 	powerupDestroyAll();
 }
 

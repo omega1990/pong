@@ -12,6 +12,7 @@
 #include "GameState.h"
 #include "Text.h"
 #include "PowerupController.h"
+#include "MenuObject.h"
 
 bool upPressed;
 bool downPressed;
@@ -25,10 +26,10 @@ int scorePlayerTwo;
 static bool init(SDL_Window **, SDL_Renderer **);
 
 //Frees media and shuts down SDL
-static void close(SDL_Renderer **renderer, 
+static void close(SDL_Renderer **renderer,
 	SDL_Window **window,
-	Background**background, 
-	Ball **ball, 
+	Background**background,
+	Ball **ball,
 	Player **playerOne,
 	Player **playerTwo);
 
@@ -37,11 +38,13 @@ static void resetGame(Ball **ball);
 static void matchFinished(Ball *ball, PowerupController *powerupController, SDL_Renderer *renderer);
 static void controlPowerups(PowerupController *powerupController);
 static void controlScore(Text *scoreText, Text *winningText, SDL_Renderer *renderer, Ball *ball, PowerupController* powerupController);
-static void drawMainSprites(Background *background, Ball *ball, Player *playerOne, Player *playerTwo);
-static void drawMenu(Background *background, Text *startNewGame, Text *exit);
+static void drawMainSprites(Background *background, Ball *ball, Player *playerOne, Player *playerTwo, Text *pressSpaceText);
+static void drawMenu(Background *background, MenuObject *playerVsPlayer, MenuObject *playerVsCpu, MenuObject *exit);
 
 static bool quit = false;
-
+static bool gamemplayAllowed = false;
+static bool AIallowed = false;
+static const unsigned int numOfMenuItems = 3;
 
 enum GamePhase
 {
@@ -51,11 +54,12 @@ enum GamePhase
 
 enum MenuItem
 {
-	START = 0, 
-	EXIT  = 1
+	PLAYERVPLAYER = 0,
+	PLAYERVCPU = 1,
+	EXIT = 2
 };
 
-static MenuItem selectedMenuItem = START;
+static MenuItem selectedMenuItem = PLAYERVPLAYER;
 
 static GamePhase gamePhase = MENU;
 
@@ -79,7 +83,7 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 	else
-	{	
+	{
 		SDL_Event e;
 
 		Background *background = new Background(renderer);
@@ -88,9 +92,11 @@ int main(int argc, char *argv[])
 		Ball *ball = new Ball(renderer, 25, DEFAULT_BALL_SPEED, playerOne, playerTwo);
 		Text *scoreText = new Text(renderer, Text::OUTLAW);
 		Text *winningText = new Text(renderer, Text::DIESEL);
-		Text *startNewGame = new Text(renderer, Text::DIESEL);
-		startNewGame->Selected = true;
-		Text *exit = new Text(renderer, Text::DIESEL);
+		Text *pressSpaceText = new Text(renderer, Text::DIESEL);
+		MenuObject *playerVsPlayer = new MenuObject(renderer, Text::DIESEL, (SCREEN_WIDTH - 200) / 2, 405, 200, 55);
+		playerVsPlayer->Selected = true;
+		MenuObject *playerVsCpu = new MenuObject(renderer, Text::DIESEL, (SCREEN_WIDTH - 200) / 2, 465, 200, 55);
+		MenuObject *exit = new MenuObject(renderer, Text::DIESEL, (SCREEN_WIDTH - 100) / 2, 525, 100, 55);
 
 		PowerupController *powerupController = new PowerupController(renderer, ball, playerOne, playerTwo);
 
@@ -100,6 +106,7 @@ int main(int argc, char *argv[])
 			if (resetNeeded)
 			{
 				reset(&ball);
+				gamemplayAllowed = false;
 				powerupController->PowerupDeactivateAll();
 			}
 
@@ -126,12 +133,19 @@ int main(int argc, char *argv[])
 
 					if (e.key.keysym.sym == SDLK_w)
 					{
-						wPressed = true;
+						if(!AIallowed)
+							wPressed = true;
 					}
 					if (e.key.keysym.sym == SDLK_s)
 					{
-						sPressed = true;
+						if(!AIallowed)
+							sPressed = true;
 					}
+					if (e.key.keysym.sym == SDLK_SPACE)
+					{
+						gamemplayAllowed = true;
+					}
+
 
 					break;
 				}
@@ -141,7 +155,7 @@ int main(int argc, char *argv[])
 					{
 						if (downPressed)
 						{
-							selectedMenuItem = static_cast<MenuItem>((selectedMenuItem + 1) % 2);
+							selectedMenuItem = static_cast<MenuItem>((selectedMenuItem + 1) % numOfMenuItems);
 						}
 						downPressed = false;
 					}
@@ -149,7 +163,14 @@ int main(int argc, char *argv[])
 					{
 						if (upPressed)
 						{
-							selectedMenuItem = static_cast<MenuItem>(abs(((static_cast<int>(selectedMenuItem) - 1) % 2)));
+							if (selectedMenuItem - 1 < 0)
+							{
+								selectedMenuItem = static_cast<MenuItem>(numOfMenuItems - 1);
+							}
+							else
+							{
+								selectedMenuItem = static_cast<MenuItem>((static_cast<int>(selectedMenuItem) - 1) % numOfMenuItems);
+							}
 						}
 						upPressed = false;
 					}
@@ -165,8 +186,13 @@ int main(int argc, char *argv[])
 					{
 						switch (selectedMenuItem)
 						{
-						case START:
+						case PLAYERVPLAYER:
 							gamePhase = GAMEPLAY;
+							AIallowed = false;
+							break;
+						case PLAYERVCPU:
+							gamePhase = GAMEPLAY;
+							AIallowed = true;
 							break;
 						case EXIT:
 							close(&renderer, &window, &background, &ball, &playerOne, &playerTwo);
@@ -175,6 +201,10 @@ int main(int argc, char *argv[])
 							// Do nothing
 							break;
 						}
+					}
+					if (e.key.keysym.sym == SDLK_ESCAPE)
+					{
+						matchFinished(ball, powerupController, renderer);
 					}
 					break;
 				}
@@ -189,30 +219,69 @@ int main(int argc, char *argv[])
 			case MENU:
 				switch (selectedMenuItem)
 				{
-				case START:
-					startNewGame->SetSelected(true);
+				case PLAYERVPLAYER:
+					playerVsPlayer->SetSelected(true);
+					playerVsCpu->SetSelected(false);
+					exit->SetSelected(false);
+					break;
+				case PLAYERVCPU:
+					playerVsCpu->SetSelected(true);
+					playerVsPlayer->SetSelected(false);
 					exit->SetSelected(false);
 					break;
 				case EXIT:
-					startNewGame->SetSelected(false);
 					exit->SetSelected(true);
+					playerVsPlayer->SetSelected(false);
+					playerVsCpu->SetSelected(false);
 					break;
 				default:
 					break;
 				}
-				drawMenu(background, startNewGame, exit);
+				drawMenu(background, playerVsPlayer, playerVsCpu, exit);
 				break;
 			case GAMEPLAY:
-				drawMainSprites(background, ball, playerOne, playerTwo);
+				drawMainSprites(background, ball, playerOne, playerTwo, pressSpaceText);
 				controlScore(scoreText, winningText, renderer, ball, powerupController);
 				controlPowerups(powerupController);
 				break;
 			default:
 				break;
-			}	
+			}
 
-			//Update screen
-			SDL_RenderPresent(renderer);	
+
+			// AI logic
+			if (AIallowed)
+			{
+				/*if (playerTwo->y > (ball->y + ball->h))
+				{
+					upPressed = true;
+					wPressed = true;
+					downPressed = false;
+					sPressed = false;
+				}
+				else if ((playerTwo->y + playerTwo->h) < ball->y)
+				{
+					downPressed = true;
+					sPressed = true;
+					upPressed = false;
+					wPressed = false;
+				}*/
+
+				if (playerOne->y > (ball->y + ball->h))
+				{
+					wPressed = true;
+					sPressed = false;
+				}
+				else if ((playerOne->y + playerOne->h) < ball->y)
+				{
+					sPressed = true;
+					wPressed = false;
+				}
+			}
+
+
+				//Update screen
+			SDL_RenderPresent(renderer);
 			SDL_Delay(5);
 		}
 
@@ -275,11 +344,11 @@ static bool init(SDL_Window **window, SDL_Renderer **renderer)
 	return true;
 }
 
-static void close(SDL_Renderer **renderer, 
-	SDL_Window **window, 
-	Background **background, 
-	Ball **ball, 
-	Player **playerOne, 
+static void close(SDL_Renderer **renderer,
+	SDL_Window **window,
+	Background **background,
+	Ball **ball,
+	Player **playerOne,
 	Player **playerTwo
 	)
 {
@@ -301,7 +370,7 @@ static void close(SDL_Renderer **renderer,
 
 static void reset(Ball **ball)
 {
-	if(ball != NULL)
+	if (ball != NULL)
 		(*ball)->ResetPosition();
 
 	resetNeeded = false;
@@ -313,35 +382,45 @@ static void resetGame(Ball **ball)
 
 	scorePlayerOne = 0;
 	scorePlayerTwo = 0;
+
+	upPressed = false;
+	downPressed = false;
+	wPressed = false;
+	sPressed = false;
 }
 
 static void matchFinished(Ball *ball, PowerupController *powerupController, SDL_Renderer *renderer)
 {
 	SDL_RenderPresent(renderer);
-	SDL_Delay(2000);
 	resetGame(&ball);
-	powerupController->PowerupDeactivateAll();		
+	powerupController->PowerupDeactivateAll();
+	gamePhase = MENU;
+	selectedMenuItem = PLAYERVPLAYER;
+	gamemplayAllowed = false;
 }
 
 static void controlPowerups(PowerupController *powerupController)
 {
-	if (powerupController->powerUpOnField == false && powerupController->IsTimeForPowerUp())
+	if (gamemplayAllowed)
 	{
-		powerupController->PowerupSpawn();
-	}
+		if (powerupController->powerUpOnField == false && powerupController->IsTimeForPowerUp())
+		{
+			powerupController->PowerupSpawn();
+		}
 
-	if (powerupController->powerUpOnField)
-	{
-		powerupController->DrawPowerup();
-		powerupController->CheckCollision();
-	}
+		if (powerupController->powerUpOnField)
+		{
+			powerupController->DrawPowerup();
+			powerupController->CheckCollision();
+		}
 
-	powerupController->TriggerDeactivation();
+		powerupController->TriggerDeactivation();
+	}
 }
 
 static void controlScore(Text *scoreText, Text *winningText, SDL_Renderer *renderer, Ball *ball, PowerupController* powerupController)
 {
-    std::string scoreString = std::to_string(scorePlayerOne);
+	std::string scoreString = std::to_string(scorePlayerOne);
 	const char* scoreChar = scoreString.c_str();
 
 	scoreText->Write(scoreChar, SCORE_ONE_X, SCORE_Y);
@@ -354,25 +433,35 @@ static void controlScore(Text *scoreText, Text *winningText, SDL_Renderer *rende
 	{
 		winningText->Write("Player One Wins!", 160, 65, 500);
 		matchFinished(ball, powerupController, renderer);
+		SDL_Delay(2000);
 	}
 	else if (scorePlayerTwo == SCORE_FOR_VICTORY)
 	{
 		winningText->Write("Player Two Wins!", 160, 65, 500);
 		matchFinished(ball, powerupController, renderer);
+		SDL_Delay(2000);
 	}
 }
 
-static void drawMainSprites(Background *background, Ball *ball, Player *playerOne, Player *playerTwo)
+static void drawMainSprites(Background *background, Ball *ball, Player *playerOne, Player *playerTwo, Text *pressSpaceText)
 {
 	background->Draw(0, 0);
-	ball->Draw();
+	if (gamemplayAllowed)
+	{
+		ball->Draw();
+	}
+	else
+	{
+		pressSpaceText->Write("Press space for kick-off...", static_cast<int>((SCREEN_WIDTH - 300) / 2), 20, 300, 55);
+	}
 	playerOne->Draw();
 	playerTwo->Draw();
 }
 
-static void drawMenu(Background *background, Text *startNewGame, Text *exit)
+static void drawMenu(Background *background, MenuObject *playerVsPlayer, MenuObject *playerVsCpu, MenuObject *exit)
 {
 	background->Draw(0, 0);
-	startNewGame->WriteSelected("Start new game", (SCREEN_WIDTH-375)/2, 420, 375, 55);
-	exit->WriteSelected("Exit", (SCREEN_WIDTH - 100) / 2, 485, 100, 55);
+	playerVsPlayer->WriteSelected("P1 Vs P2");
+	playerVsCpu->WriteSelected("P1 Vs CPU");	
+	exit->WriteSelected("Exit");
 }

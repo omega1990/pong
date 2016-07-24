@@ -11,7 +11,6 @@ Fire::Fire(SDL_Renderer *passedRenderer, double passedX, double passedY, SpriteT
 	y = passedY;
 
 	QueryDimensions(&w, &h, numberOfFrames);
-
 }
 
 

@@ -143,6 +143,9 @@ void Sprite::ChangeTexture(SpriteType spriteType)
 	case POWERUP_BALL_SPEED:
 		path = "Textures/PU_BallSpeed.png";
 		break;
+	case ARROW:
+		path = "Textures/Arrow.png";
+		break;
 	default:
 		break;
 	}
