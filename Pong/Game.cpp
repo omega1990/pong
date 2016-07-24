@@ -33,19 +33,9 @@ static void close(SDL_Renderer **renderer,
 
 static void reset(Ball **ball);
 static void resetGame(Ball **ball);
+static void matchFinished(Ball *ball, PowerupController *powerupController);
 
 static bool quit = false;
-
-
-int my_thread(void *data, Ball *ball)
-{
-	//While the program is not over
-	while (!quit)
-	{
-		ball->Draw();
-	}	
-	return 0;
-}
 
 int main(int argc, char *argv[])
 {
@@ -69,9 +59,10 @@ int main(int argc, char *argv[])
 	else
 	{	
 		SDL_Event e;
+
+		// Variables for scoring player scores
 		std::string scoreString;
 		char const *scoreChar;
-		bool isFinished = false;
 
 		Background *background = new Background(renderer);
 		Player *playerOne = new Player(renderer, Player::ONE, SpriteType::PLAYERONE);
@@ -160,12 +151,12 @@ int main(int argc, char *argv[])
 			if (scorePlayerOne == SCORE_FOR_VICTORY)
 			{
 				text->Write("Player One Wins!", 150, 25, 500);				
-				isFinished = true;
+				matchFinished(ball, powerupController);
 			}
 			else if (scorePlayerTwo == SCORE_FOR_VICTORY)
 			{
 				text->Write("Player Two Wins!", 150, 25, 500);				
-				isFinished = true;
+				matchFinished(ball, powerupController);
 			}
 
 			if (powerupController->powerUpOnField == false && powerupController->IsTimeForPowerUp())
@@ -180,17 +171,9 @@ int main(int argc, char *argv[])
 			}
 
 			powerupController->TriggerDeactivation();
-			
-			//Update screen
-			SDL_RenderPresent(renderer);
 
-			if (isFinished)
-			{
-				SDL_Delay(2000);
-				resetGame(&ball);
-				powerupController->PowerupDeactivateAll();
-				isFinished = false;
-			}
+			//Update screen
+			SDL_RenderPresent(renderer);	
 
 			SDL_Delay(5);
 		}
@@ -292,4 +275,11 @@ void resetGame(Ball **ball)
 
 	scorePlayerOne = 0;
 	scorePlayerTwo = 0;
+}
+
+void matchFinished(Ball *ball, PowerupController *powerupController)
+{
+	SDL_Delay(2000);
+	resetGame(&ball);
+	powerupController->PowerupDeactivateAll();	
 }

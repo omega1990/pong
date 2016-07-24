@@ -1,103 +1,5 @@
 #include "PowerupController.h"
 
-
-
-typedef struct powerup
-{
-	Powerup *currentPowerup;
-	unsigned int time;
-	powerup *next;
-} powerup;
-
-static powerup *head;
-
-powerup* createPowerup(Powerup *powerupToPush, Player *player)
-{
-	powerup *createdPowerup = new powerup;
-	createdPowerup->currentPowerup = powerupToPush;
-	createdPowerup->time = SDL_GetTicks();
-	createdPowerup->next = nullptr;
-	createdPowerup->currentPowerup->player = player;
-	return createdPowerup;
-}
-
-void pushPowerup(Powerup *powerupToPush, Player *player)
-{
-	if (head == nullptr)
-	{
-		head = createPowerup(powerupToPush, player);
-		return;
-	}
-
-	powerup *current = head;
-
-	while (current)
-	{
-		if ((typeid(*(current->currentPowerup)).name() == typeid(*powerupToPush).name()) &&
-			(player == current->currentPowerup->player))
-		{
-			break;
-		}
-
-		current = current->next;
-	}
-
-	current = createPowerup(powerupToPush, player);
-}
-
-void popPowerup(powerup *powerupToPop)
-{
-	// Nothing to pop
-	if (!head)
-	{
-		return;
-	}
-
-	powerup *previous = nullptr;
-	powerup *current = head;
-
-	while (current)
-	{
-		if ((typeid(*(current->currentPowerup)).name() == typeid(*(powerupToPop->currentPowerup)).name()) &&
-			(powerupToPop->currentPowerup->player == current->currentPowerup->player))
-		{
-			if (previous)
-			{
-				previous->next = current->next;
-			}
-
-			if (current == head)
-			{
-				head = head->next;
-			}
-
-			current = nullptr;
-			delete current;
-			return;
-		}
-
-		previous = current;
-		current = current->next;
-	}
-
-}
-
-void destroyPowerups()
-{
-	powerup *current = head;
-
-	while (current)
-	{
-		powerup *powerUpToDestroy = current;
-		current = current->next;
-		powerUpToDestroy->currentPowerup->DeactivatePowerup();
-		powerUpToDestroy = nullptr;
-		delete powerUpToDestroy;
-	}
-}
-
-static powerup powerups;
-
 PowerupController::PowerupController(SDL_Renderer *passedRenderer, Ball *passedBall, Player *passedPlayerOne, Player *passedPlayerTwo) :
 	renderer(passedRenderer),
 	ball(passedBall),
@@ -111,7 +13,7 @@ PowerupController::PowerupController(SDL_Renderer *passedRenderer, Ball *passedB
 
 PowerupController::~PowerupController()
 {
-	destroyPowerups();
+	powerupDestroyAll();
 }
 
 bool PowerupController::IsTimeForPowerUp()
@@ -160,11 +62,11 @@ void PowerupController::CheckCollision()
 		powerUpOnField = false;
 		if (ball->directionHorizontal == Ball::direction::LEFT)
 		{
-			pushPowerup(currentPowerup, playerTwo);
+			powerupPush(currentPowerup, playerTwo);
 		}
 		else if (ball->directionHorizontal == Ball::direction::RIGHT)
 		{
-			pushPowerup(currentPowerup, playerOne);
+			powerupPush(currentPowerup, playerOne);
 		}
 	}
 }
@@ -178,7 +80,7 @@ void PowerupController::TriggerDeactivation()
 		if ((current->time + POWERUP_DURATION) < SDL_GetTicks())
 		{
 			current->currentPowerup->DeactivatePowerup();
-			popPowerup(current);
+			powerupPop(current);
 			return;
 		}
 		current = current->next;
@@ -187,5 +89,96 @@ void PowerupController::TriggerDeactivation()
 
 void PowerupController::PowerupDeactivateAll()
 {
-	destroyPowerups();
+	powerupDestroyAll();
+}
+
+powerup* PowerupController::powerupCreate(Powerup *powerupToPush, Player *player)
+{
+	powerup *createdPowerup = new powerup;
+	createdPowerup->currentPowerup = powerupToPush;
+	createdPowerup->time = SDL_GetTicks();
+	createdPowerup->next = nullptr;
+	createdPowerup->currentPowerup->player = player;
+	return createdPowerup;
+}
+
+void PowerupController::powerupPush(Powerup *powerupToPush, Player *player)
+{
+	if (head == nullptr)
+	{
+		head = powerupCreate(powerupToPush, player);
+		return;
+	}
+
+	powerup *current = head;
+	powerup *previous = nullptr;
+
+	while (current)
+	{
+		if ((typeid(*(current->currentPowerup)).name() == typeid(*powerupToPush).name()) &&
+			(player == current->currentPowerup->player))
+		{
+
+			current->time = SDL_GetTicks();
+			return;
+		}
+
+		previous = current;
+		current = current->next;
+	}
+
+	current = powerupCreate(powerupToPush, player);
+	if (previous)
+	{
+		previous->next = current;
+	}
+}
+
+void PowerupController::powerupPop(powerup *powerupToPop)
+{
+	// Nothing to pop
+	if (!head)
+	{
+		return;
+	}
+
+	powerup *previous = nullptr;
+	powerup *current = head;
+
+	while (current)
+	{
+		if ((typeid(*(current->currentPowerup)).name() == typeid(*(powerupToPop->currentPowerup)).name()) &&
+			(powerupToPop->currentPowerup->player == current->currentPowerup->player))
+		{
+			if (previous)
+			{
+				previous->next = current->next;
+			}
+			else
+			{
+				head = head->next;
+			}
+
+			current = nullptr;
+			delete current;
+			return;
+		}
+
+		previous = current;
+		current = current->next;
+	}
+}
+
+void PowerupController::powerupDestroyAll()
+{
+	powerup *current = head;
+
+	while (current)
+	{
+		powerup *powerUpToDestroy = current;
+		current = current->next;
+		powerUpToDestroy->currentPowerup->DeactivatePowerup();
+		powerUpToDestroy = nullptr;
+		delete powerUpToDestroy;
+	}
 }

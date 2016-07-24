@@ -6,36 +6,45 @@
 #include "PowerupBallSpeed.h"
 #include "Settings.h"
 
+typedef struct powerup
+{
+	Powerup *currentPowerup;
+	unsigned int time;
+	powerup *next;
+} powerup;
+
 class PowerupController
 {
 public:
-
+	bool powerUpOnField;
 	enum PowerUp
 	{
 		GROW = 0,
 		BALL_SPEED = 1
 	};
-
+	
 	PowerupController(SDL_Renderer *passedRenderer, Ball *passedBall, Player *passedPlayerOne, Player *passedPlayerTwo);
 	~PowerupController();
 	void PowerupSpawn();
 	void PowerupDeactivateAll();
 	bool IsTimeForPowerUp();
-	Powerup *currentPowerup;
 	void CheckCollision();
 	void DrawPowerup();
 	void TriggerDeactivation();
 
-	bool powerUpOnField;
-	unsigned int powerupTimer;
-
-	double x;
-	double y;
-
 private:
+	Powerup *currentPowerup;
 	SDL_Renderer *renderer;
 	Ball *ball;
 	Player *playerOne;
 	Player *playerTwo;
+	powerup *head;
+	double x;
+	double y;
+
+	powerup* powerupCreate(Powerup *powerupToPush, Player *player);
+	void powerupPush(Powerup *powerupToPush, Player *player);
+	void powerupPop(powerup *powerupToPop);
+	void powerupDestroyAll();
 };
 
