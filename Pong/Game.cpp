@@ -20,6 +20,7 @@ bool sPressed;
 int scorePlayerOne;
 int scorePlayerTwo;
 
+
 //Starts up SDL and creates window
 static bool init(SDL_Window **, SDL_Renderer **);
 
@@ -37,8 +38,26 @@ static void matchFinished(Ball *ball, PowerupController *powerupController, SDL_
 static void controlPowerups(PowerupController *powerupController);
 static void controlScore(Text *scoreText, Text *winningText, SDL_Renderer *renderer, Ball *ball, PowerupController* powerupController);
 static void drawMainSprites(Background *background, Ball *ball, Player *playerOne, Player *playerTwo);
+static void drawMenu(Background *background, Text *startNewGame, Text *exit);
 
 static bool quit = false;
+
+
+enum GamePhase
+{
+	MENU = 0,
+	GAMEPLAY = 1
+};
+
+enum MenuItem
+{
+	START = 0, 
+	EXIT  = 1
+};
+
+static MenuItem selectedMenuItem = START;
+
+static GamePhase gamePhase = MENU;
 
 int main(int argc, char *argv[])
 {
@@ -63,23 +82,26 @@ int main(int argc, char *argv[])
 	{	
 		SDL_Event e;
 
-		// Variables for scoring player scores
-		std::string scoreString;
-		char const *scoreChar;
-
 		Background *background = new Background(renderer);
 		Player *playerOne = new Player(renderer, Player::ONE, SpriteType::PLAYERONE);
 		Player *playerTwo = new Player(renderer, Player::TWO, SpriteType::PLAYERTWO);
 		Ball *ball = new Ball(renderer, 25, DEFAULT_BALL_SPEED, playerOne, playerTwo);
 		Text *scoreText = new Text(renderer, Text::OUTLAW);
 		Text *winningText = new Text(renderer, Text::DIESEL);
+		Text *startNewGame = new Text(renderer, Text::DIESEL);
+		startNewGame->Selected = true;
+		Text *exit = new Text(renderer, Text::DIESEL);
 
 		PowerupController *powerupController = new PowerupController(renderer, ball, playerOne, playerTwo);
 
 		//While application is running
 		while (!quit)
 		{
-			if (resetNeeded) reset(&ball);
+			if (resetNeeded)
+			{
+				reset(&ball);
+				powerupController->PowerupDeactivateAll();
+			}
 
 			//Handle events on queue
 			while (SDL_PollEvent(&e) != 0)
@@ -117,10 +139,18 @@ int main(int argc, char *argv[])
 				{
 					if (e.key.keysym.sym == SDLK_DOWN)
 					{
+						if (downPressed)
+						{
+							selectedMenuItem = static_cast<MenuItem>((selectedMenuItem + 1) % 2);
+						}
 						downPressed = false;
 					}
 					if (e.key.keysym.sym == SDLK_UP)
 					{
+						if (upPressed)
+						{
+							selectedMenuItem = static_cast<MenuItem>(abs(((static_cast<int>(selectedMenuItem) - 1) % 2)));
+						}
 						upPressed = false;
 					}
 					if (e.key.keysym.sym == SDLK_w)
@@ -131,6 +161,21 @@ int main(int argc, char *argv[])
 					{
 						sPressed = false;
 					}
+					if (e.key.keysym.sym == SDLK_RETURN || e.key.keysym.sym == SDLK_KP_ENTER)
+					{
+						switch (selectedMenuItem)
+						{
+						case START:
+							gamePhase = GAMEPLAY;
+							break;
+						case EXIT:
+							close(&renderer, &window, &background, &ball, &playerOne, &playerTwo);
+							return 0;
+						default:
+							// Do nothing
+							break;
+						}
+					}
 					break;
 				}
 				}
@@ -139,13 +184,35 @@ int main(int argc, char *argv[])
 			//Clear screen
 			SDL_RenderClear(renderer);
 
-			drawMainSprites(background, ball, playerOne, playerTwo);			
-			controlScore(scoreText, winningText, renderer, ball, powerupController);
-			controlPowerups(powerupController);		
+			switch (gamePhase)
+			{
+			case MENU:
+				switch (selectedMenuItem)
+				{
+				case START:
+					startNewGame->SetSelected(true);
+					exit->SetSelected(false);
+					break;
+				case EXIT:
+					startNewGame->SetSelected(false);
+					exit->SetSelected(true);
+					break;
+				default:
+					break;
+				}
+				drawMenu(background, startNewGame, exit);
+				break;
+			case GAMEPLAY:
+				drawMainSprites(background, ball, playerOne, playerTwo);
+				controlScore(scoreText, winningText, renderer, ball, powerupController);
+				controlPowerups(powerupController);
+				break;
+			default:
+				break;
+			}	
 
 			//Update screen
-			SDL_RenderPresent(renderer);			
-
+			SDL_RenderPresent(renderer);	
 			SDL_Delay(5);
 		}
 
@@ -301,4 +368,11 @@ static void drawMainSprites(Background *background, Ball *ball, Player *playerOn
 	ball->Draw();
 	playerOne->Draw();
 	playerTwo->Draw();
+}
+
+static void drawMenu(Background *background, Text *startNewGame, Text *exit)
+{
+	background->Draw(0, 0);
+	startNewGame->WriteSelected("Start new game", (SCREEN_WIDTH-375)/2, 420, 375, 55);
+	exit->WriteSelected("Exit", (SCREEN_WIDTH - 100) / 2, 485, 100, 55);
 }

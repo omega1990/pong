@@ -16,6 +16,10 @@ public:
 	Text(SDL_Renderer *passedRenderer, Font passedFont);
 	~Text();
 	void Write(const char *text, int x, int y, int width = 50, int height = 100);
+	void WriteSelected(const char *text, int x, int y, int width = 50, int height = 100);
+	bool Selected;
+	void SetSelected(bool selected);
+
 
 private:
 	TTF_Font *font;
@@ -24,5 +28,8 @@ private:
 	SDL_Texture* message;
 	std::string text;
 	SDL_Rect messageRect;
+	int colorAdd;
+	void resetColor();
+	const int selHiglightLimit;
 };
 
