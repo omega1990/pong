@@ -85,7 +85,7 @@ void Player::setCoordinates()
 	}
 	else
 	{
-		x = PLAYER_TWO_POSITION_X - tabWidth;
+		x = PLAYER_TWO_POSITION_X - w;
 		playerTwoPosition = positionY;
 	}
 }

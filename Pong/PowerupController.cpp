@@ -50,7 +50,7 @@ void PowerupController::DrawPowerup()
 {
 	if (currentPowerup)
 	{
-		currentPowerup->DrawAnimated(5, x, y);
+		currentPowerup->DrawAnimated(19, x, y);
 	}
 }
 

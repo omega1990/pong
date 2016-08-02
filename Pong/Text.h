@@ -11,7 +11,9 @@ public:
 	enum Font
 	{
 		DIESEL=0, 
-		OUTLAW=1
+		OUTLAW=1, 
+		JEDI=2, 
+		SPACE=3
 	};
 
 	Text(SDL_Renderer *passedRenderer, Font passedFont, int passedX = -1, int passedY = -1, int passedW = 50, int passedH = 100);

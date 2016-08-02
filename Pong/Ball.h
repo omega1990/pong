@@ -29,6 +29,7 @@ public:
 	int speed;		
 
 private:
+	const int numberOfFrames = 32;
 	void handleCollision();
 	SDL_Renderer *renderer;	
 	double xSpeedComponent;

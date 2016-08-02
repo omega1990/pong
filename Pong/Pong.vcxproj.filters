@@ -66,6 +66,9 @@
     <ClCompile Include="MenuObject.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="StarShine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\ja.jpg">
@@ -119,6 +122,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="MenuObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StarShine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

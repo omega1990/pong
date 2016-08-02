@@ -16,6 +16,12 @@ Text::Text(SDL_Renderer *passedRenderer, Font passedFont, int passedX, int passe
 	case DIESEL:
 		font = TTF_OpenFont("Fonts/DIESELPUNK.ttf", 275);
 		break;
+	case JEDI:
+		font = TTF_OpenFont("Fonts/VICEVERSA.ttf", 275);
+		break;
+	case SPACE:
+		font = TTF_OpenFont("Fonts/space_age.ttf", 275);
+		break;
 	default:
 		// Do nothing 
 		break;
@@ -58,6 +64,5 @@ void Text::Write(const char *text, int passedX, int passedY, int width, int heig
 
 void Text::resetColor()
 {
-	color = { 0, 0, 0 };
-
+	color = { 255, 255, 255 };
 }

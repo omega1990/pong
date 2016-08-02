@@ -91,7 +91,7 @@ bool Sprite::DrawAnimated(const int numberOfFrames,
 
 	Draw(xPosition, yPosition, width/numberOfFrames, height, frameNumber*(width/numberOfFrames), 0);
 	
-	if (lastFrameTime + 100 < currentTime)
+	if (lastFrameTime + animationPeriod < currentTime)
 	{
 		lastFrameTime = currentTime;
 		if (frameNumber == numberOfFrames - 1)
@@ -108,49 +108,60 @@ bool Sprite::DrawAnimated(const int numberOfFrames,
 
 void Sprite::ChangeTexture(SpriteType spriteType)
 {
+	std::string newPath;
+	
 	switch (spriteType)
 	{
 	case BACKGROUND:
-		path = "Textures/PongBackground.png";
+		newPath = "Textures/PongBackground.png";
 		break;
 	case BALL:
-		path = "Textures/Ball.png";
+		newPath = "Textures/BallAnimated.png";
 		break;
 	case PLAYERONE:
-		path = "Textures/TabOneAnimated.png";
+		newPath = "Textures/TabOneAnimated.png";
 		break;
 	case PLAYERTWO:
-		path = "Textures/TabTwoAnimated.png";
+		newPath = "Textures/TabTwoAnimated.png";
 		break;
 	case FIREDOWN:
-		path = "Textures/FireDownAnimated.png";
+		newPath = "Textures/FireDownAnimated.png";
 		break;
 	case FIREUP:
-		path = "Textures/FireUpAnimated.png";
+		newPath = "Textures/FireUpAnimated.png";
 		break;
 	case POWERUP_GROW:
-		path = "Textures/PU_Grow.png";
+		newPath = "Textures/PU_Grow.png";
 		break;
 	case PLAYERONEGROW:
-		path = "Textures/OneAnimatedGrow.png";
+		newPath = "Textures/OneAnimatedGrow.png";
 		break;
 	case PLAYERTWOGROW:
-		path = "Textures/TwoAnimatedGrow.png";
+		newPath = "Textures/TwoAnimatedGrow.png";
 		break;
 	case BALL_SPEED:
-		path = "Textures/BallSpeed.png";
+		newPath = "Textures/BallAnimated.png";
 		break;
 	case POWERUP_BALL_SPEED:
-		path = "Textures/PU_BallSpeed.png";
+		newPath = "Textures/PU_BallSpeed.png";
 		break;
 	case ARROW:
-		path = "Textures/Arrow.png";
+		newPath = "Textures/Arrow.png";
+		break;
+	case STARSHINE:
+		newPath = "Textures/StarShine.png";
+		break;
+	case STARSHINESMALL:
+		newPath = "Textures/StarShineSmall.png";
 		break;
 	default:
 		break;
 	}
 
-
-	LoadTexture();
+	if (path.compare(newPath) != 0)
+	{
+		path = newPath;
+		LoadTexture();
+	}
 }
 

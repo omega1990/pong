@@ -17,6 +17,7 @@ Ball::Ball(SDL_Renderer *passedRenderer, int passedSize, int passedSpeed, Player
 	playerOne(passedPlayerOne),
 	playerTwo(passedPlayerTwo)
 {
+	QueryDimensions(&w, &h, numberOfFrames);
 }
 
 
@@ -28,7 +29,7 @@ Ball::~Ball()
 void Ball::Draw()
 {
 	handleCollision();
-	Sprite::Draw(x, y, w, h);
+	Sprite::DrawAnimated(numberOfFrames, x, y);
 }
 
 

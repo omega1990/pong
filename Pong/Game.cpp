@@ -13,6 +13,7 @@
 #include "Text.h"
 #include "PowerupController.h"
 #include "MenuObject.h"
+#include "StarShine.h"
 
 bool upPressed;
 bool downPressed;
@@ -38,7 +39,7 @@ static void resetGame(Ball **ball);
 static void matchFinished(Ball *ball, PowerupController *powerupController, SDL_Renderer *renderer);
 static void controlPowerups(PowerupController *powerupController);
 static void controlScore(Text *scoreText, Text *winningText, SDL_Renderer *renderer, Ball *ball, PowerupController* powerupController);
-static void drawMainSprites(Background *background, Ball *ball, Player *playerOne, Player *playerTwo, Text *pressSpaceText);
+static void drawMainSprites(Background *background, Ball *ball, Player *playerOne, Player *playerTwo, Text *pressSpaceText, StarShine *starShine, StarShine *starShineSmall);
 static void drawMenu(Background *background, MenuObject *playerVsPlayer, MenuObject *playerVsCpu, MenuObject *exit);
 
 static bool quit = false;
@@ -90,15 +91,19 @@ int main(int argc, char *argv[])
 		Player *playerOne = new Player(renderer, Player::ONE, SpriteType::PLAYERONE);
 		Player *playerTwo = new Player(renderer, Player::TWO, SpriteType::PLAYERTWO);
 		Ball *ball = new Ball(renderer, 25, DEFAULT_BALL_SPEED, playerOne, playerTwo);
-		Text *scoreText = new Text(renderer, Text::OUTLAW);
+		Text *scoreText = new Text(renderer, Text::JEDI);
 		Text *winningText = new Text(renderer, Text::DIESEL);
-		Text *pressSpaceText = new Text(renderer, Text::DIESEL);
+		Text *pressSpaceText = new Text(renderer, Text::SPACE);
 		MenuObject *playerVsPlayer = new MenuObject(renderer, Text::DIESEL, (SCREEN_WIDTH - 200) / 2, 405, 200, 55);
 		playerVsPlayer->Selected = true;
 		MenuObject *playerVsCpu = new MenuObject(renderer, Text::DIESEL, (SCREEN_WIDTH - 200) / 2, 465, 200, 55);
 		MenuObject *exit = new MenuObject(renderer, Text::DIESEL, (SCREEN_WIDTH - 100) / 2, 525, 100, 55);
 
 		PowerupController *powerupController = new PowerupController(renderer, ball, playerOne, playerTwo);
+
+		StarShine *starShine = new StarShine(renderer, 200, 200, SpriteType::STARSHINE);
+		StarShine *starShineSmall = new StarShine(renderer, 200, 200, SpriteType::STARSHINESMALL);
+
 
 		//While application is running
 		while (!quit)
@@ -240,7 +245,7 @@ int main(int argc, char *argv[])
 				drawMenu(background, playerVsPlayer, playerVsCpu, exit);
 				break;
 			case GAMEPLAY:
-				drawMainSprites(background, ball, playerOne, playerTwo, pressSpaceText);
+				drawMainSprites(background, ball, playerOne, playerTwo, pressSpaceText, starShine, starShineSmall);
 				controlScore(scoreText, winningText, renderer, ball, powerupController);
 				controlPowerups(powerupController);
 				break;
@@ -443,16 +448,27 @@ static void controlScore(Text *scoreText, Text *winningText, SDL_Renderer *rende
 	}
 }
 
-static void drawMainSprites(Background *background, Ball *ball, Player *playerOne, Player *playerTwo, Text *pressSpaceText)
+static void drawMainSprites(Background *background, Ball *ball, Player *playerOne, Player *playerTwo, Text *pressSpaceText, StarShine *starShine, StarShine *starShineSmall)
 {
 	background->Draw(0, 0);
+	starShine->DrawAnimated(245, 145);
+	starShine->DrawAnimated(433, 73);
+	starShine->DrawAnimated(160, 300);
+	starShine->DrawAnimated(116, 351);
+
+	starShineSmall->DrawAnimated(100, 340);
+
+	starShineSmall->DrawAnimated(560, 200);
+	starShineSmall->DrawAnimated(500, 180);
+	starShineSmall->DrawAnimated(344, 464);
+
 	if (gamemplayAllowed)
 	{
 		ball->Draw();
 	}
 	else
 	{
-		pressSpaceText->Write("Press space for kick-off...", static_cast<int>((SCREEN_WIDTH - 300) / 2), 20, 300, 55);
+		pressSpaceText->Write("Press space for kick-off", static_cast<int>((SCREEN_WIDTH - 500) / 2), 20, 500, 50);
 	}
 	playerOne->Draw();
 	playerTwo->Draw();

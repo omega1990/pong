@@ -138,6 +138,7 @@
     <ClCompile Include="PowerupController.cpp" />
     <ClCompile Include="PowerupGrow.cpp" />
     <ClCompile Include="Sprite.cpp" />
+    <ClCompile Include="StarShine.cpp" />
     <ClCompile Include="Text.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -159,6 +160,7 @@
     <ClInclude Include="Settings.h" />
     <ClInclude Include="Sprite.h" />
     <ClInclude Include="SpritesEnum.h" />
+    <ClInclude Include="StarShine.h" />
     <ClInclude Include="Text.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
