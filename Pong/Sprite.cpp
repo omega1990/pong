@@ -154,6 +154,9 @@ void Sprite::ChangeTexture(SpriteType spriteType)
 	case STARSHINESMALL:
 		newPath = "Textures/StarShineSmall.png";
 		break;
+	case EXPLOSION:
+		newPath = "Textures/explosion.png";
+		break;
 	default:
 		break;
 	}

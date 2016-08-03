@@ -54,7 +54,7 @@ void PowerupController::DrawPowerup()
 	}
 }
 
-void PowerupController::CheckCollision()
+bool PowerupController::CheckCollision()
 {
 	if (ball->isInCollision((Object)*currentPowerup))
 	{
@@ -68,7 +68,9 @@ void PowerupController::CheckCollision()
 		{
 			powerupPush(currentPowerup, playerOne);
 		}
+		return true;
 	}
+	return false;
 }
 
 void PowerupController::TriggerDeactivation()
@@ -94,6 +96,13 @@ void PowerupController::PowerupDeactivateAll()
 	delete currentPowerup;
 	powerupDestroyAll();
 }
+
+void PowerupController::GetPowerupCoordinates(double *x, double *y)
+{
+	*x = currentPowerup->x;
+	*y = currentPowerup->y;
+}
+
 
 powerup* PowerupController::powerupCreate(Powerup *powerupToPush, Player *player)
 {

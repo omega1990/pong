@@ -128,6 +128,7 @@
     <ClCompile Include="Arrow.cpp" />
     <ClCompile Include="Background.cpp" />
     <ClCompile Include="Ball.cpp" />
+    <ClCompile Include="Explosion.cpp" />
     <ClCompile Include="Fire.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="MenuObject.cpp" />
@@ -148,6 +149,7 @@
     <ClInclude Include="Arrow.h" />
     <ClInclude Include="Background.h" />
     <ClInclude Include="Ball.h" />
+    <ClInclude Include="Explosion.h" />
     <ClInclude Include="Fire.h" />
     <ClInclude Include="GameState.h" />
     <ClInclude Include="MenuObject.h" />

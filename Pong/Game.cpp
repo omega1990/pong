@@ -14,6 +14,7 @@
 #include "PowerupController.h"
 #include "MenuObject.h"
 #include "StarShine.h"
+#include "Explosion.h"
 
 bool upPressed;
 bool downPressed;
@@ -46,6 +47,9 @@ static bool quit = false;
 static bool gamemplayAllowed = false;
 static bool AIallowed = false;
 static const unsigned int numOfMenuItems = 3;
+static bool playExplosion = false;
+static double explosionX;
+static double explosionY;
 
 enum GamePhase
 {
@@ -88,6 +92,7 @@ int main(int argc, char *argv[])
 		SDL_Event e;
 
 		Background *background = new Background(renderer);
+		Explosion *explosion = new Explosion(renderer);
 		Player *playerOne = new Player(renderer, Player::ONE, SpriteType::PLAYERONE);
 		Player *playerTwo = new Player(renderer, Player::TWO, SpriteType::PLAYERTWO);
 		Ball *ball = new Ball(renderer, 25, DEFAULT_BALL_SPEED, playerOne, playerTwo);
@@ -101,8 +106,10 @@ int main(int argc, char *argv[])
 
 		PowerupController *powerupController = new PowerupController(renderer, ball, playerOne, playerTwo);
 
-		StarShine *starShine = new StarShine(renderer, 200, 200, SpriteType::STARSHINE);
-		StarShine *starShineSmall = new StarShine(renderer, 200, 200, SpriteType::STARSHINESMALL);
+		StarShine *starShine = new StarShine(renderer, SpriteType::STARSHINE);
+		StarShine *starShineSmall = new StarShine(renderer, SpriteType::STARSHINESMALL);
+
+
 
 
 		//While application is running
@@ -244,10 +251,14 @@ int main(int argc, char *argv[])
 				}
 				drawMenu(background, playerVsPlayer, playerVsCpu, exit);
 				break;
-			case GAMEPLAY:
-				drawMainSprites(background, ball, playerOne, playerTwo, pressSpaceText, starShine, starShineSmall);
-				controlScore(scoreText, winningText, renderer, ball, powerupController);
+			case GAMEPLAY:				
+				drawMainSprites(background, ball, playerOne, playerTwo, pressSpaceText, starShine, starShineSmall);				
 				controlPowerups(powerupController);
+				controlScore(scoreText, winningText, renderer, ball, powerupController);
+				if (playExplosion)
+				{
+					explosion->DrawAnimated(explosionX, explosionY, &playExplosion);
+				}
 				break;
 			default:
 				break;
@@ -257,7 +268,7 @@ int main(int argc, char *argv[])
 			// AI logic
 			if (AIallowed)
 			{
-				/*if (playerTwo->y > (ball->y + ball->h))
+				if (playerTwo->y > (ball->y + ball->h))
 				{
 					upPressed = true;
 					wPressed = true;
@@ -270,7 +281,7 @@ int main(int argc, char *argv[])
 					sPressed = true;
 					upPressed = false;
 					wPressed = false;
-				}*/
+				}
 
 				if (playerOne->y > (ball->y + ball->h))
 				{
@@ -416,7 +427,11 @@ static void controlPowerups(PowerupController *powerupController)
 		if (powerupController->powerUpOnField)
 		{
 			powerupController->DrawPowerup();
-			powerupController->CheckCollision();
+			if (powerupController->CheckCollision())
+			{
+				playExplosion = true;
+				powerupController->GetPowerupCoordinates(&explosionX, &explosionY);
+			}
 		}
 
 		powerupController->TriggerDeactivation();

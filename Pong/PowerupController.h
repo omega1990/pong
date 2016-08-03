@@ -5,6 +5,7 @@
 #include "PowerupGrow.h"
 #include "PowerupBallSpeed.h"
 #include "Settings.h"
+#include "Explosion.h"
 
 typedef struct powerup
 {
@@ -23,14 +24,19 @@ public:
 		BALL_SPEED = 1
 	};
 	
-	PowerupController(SDL_Renderer *passedRenderer, Ball *passedBall, Player *passedPlayerOne, Player *passedPlayerTwo);
+	PowerupController(SDL_Renderer *passedRenderer, 
+		Ball *passedBall, 
+		Player *passedPlayerOne, 
+		Player *passedPlayerTwo);
 	~PowerupController();
 	void PowerupSpawn();
 	void PowerupDeactivateAll();
 	bool IsTimeForPowerUp();
-	void CheckCollision();
+	bool CheckCollision();
 	void DrawPowerup();
 	void TriggerDeactivation();
+
+	void GetPowerupCoordinates(double *x, double *y);
 
 private:
 	Powerup *currentPowerup;

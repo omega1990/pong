@@ -32,8 +32,10 @@ private:
 	unsigned int lastFrameTime;
 	int frameNumber;
 	const int numberOfFrames = 5;
-	Fire *fireUp;
-	Fire *fireDown;
+	Fire *upperThruster;
+	Fire *bottomThruster;
+	int playerOnePosition;
+	int playerTwoPosition;
 
 	void setCoordinates();
 };

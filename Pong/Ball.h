@@ -5,6 +5,7 @@
 #include "Settings.h"
 #include "GameState.h"
 #include "Player.h"
+#include "Explosion.h"
 
 class Ball : public Sprite, public Object
 {
@@ -15,11 +16,15 @@ public:
 		RIGHT = 1,
 		UP	  = 2,
 		DOWN  = 3
-	};
-	
+	};	
 
-	Ball(SDL_Renderer *passedRenderer, int passedSize, int passedSpeed, Player *passedPlayerOne, Player *passedPlayerTwo);
+	Ball(SDL_Renderer *passedRenderer, 
+		int passedSize, 
+		int passedSpeed, 
+		Player *passedPlayerOne, 
+		Player *passedPlayerTwo);
 	~Ball();
+
 	void Draw();
 	void ResetPosition();
 	void ChangeSpeed(double amount);

@@ -1,10 +1,5 @@
 #include "Player.h"
 
-int tabWidth;
-int tabHeight;
-int playerOnePosition;
-int playerTwoPosition;
-
 Player::Player(SDL_Renderer *passedRenderer,
 	playerNumber passedNumber,
 	SpriteType passedSpriteType) :
@@ -20,15 +15,15 @@ Player::Player(SDL_Renderer *passedRenderer,
 	lastTime = SDL_GetTicks();
 	lastFrameTime = lastTime;
 
-	fireUp = new Fire(passedRenderer, x, y, SpriteType::FIREUP);
-	fireDown = new Fire(passedRenderer, x, y + h, SpriteType::FIREDOWN);
+	upperThruster = new Fire(passedRenderer, x, y, SpriteType::FIREUP);
+	bottomThruster = new Fire(passedRenderer, x, y + h, SpriteType::FIREDOWN);
 }
 
 
 Player::~Player()
 {
-	free(fireDown);
-	free(fireUp);
+	free(bottomThruster);
+	free(upperThruster);
 }
 
 void Player::Draw()
@@ -39,12 +34,12 @@ void Player::Draw()
 		if (wPressed && y > 0)
 		{
 			y -= TAB_SPEED;
-			fireDown->DrawAnimated(y + h);			
+			bottomThruster->DrawAnimated(y + h);			
 		}
 		else if (sPressed && y < SCREEN_HEIGHT - h)
 		{
 			y += TAB_SPEED;
-			fireUp->DrawAnimated(y);
+			upperThruster->DrawAnimated(y);
 		}
 	}
 	else
@@ -52,12 +47,12 @@ void Player::Draw()
 		if (upPressed && y > 0)
 		{
 			y -= TAB_SPEED;
-			fireDown->DrawAnimated(y+h);
+			bottomThruster->DrawAnimated(y+h);
 		}
 		else if (downPressed && y < SCREEN_HEIGHT - h)
 		{
 			y += TAB_SPEED;
-			fireUp->DrawAnimated(y);
+			upperThruster->DrawAnimated(y);
 		}
 	}
 
